@@ -3,11 +3,12 @@ import 'react-perfect-scrollbar/dist/css/styles.css';
 import '../styles/tailwind.css';
 import { Metadata } from 'next';
 import { Nunito } from 'next/font/google';
+import QueryClientProvider from './providers/query-client-provider';
 
 export const metadata: Metadata = {
     title: {
-        template: '%s | VRISTO - Multipurpose Tailwind Dashboard Template',
-        default: 'VRISTO - Multipurpose Tailwind Dashboard Template',
+        template: '%s | MENSLEGIS - O real espírito das leis',
+        default: 'MENSLEGIS - O real espírito das leis',
     },
 };
 const nunito = Nunito({
@@ -17,11 +18,13 @@ const nunito = Nunito({
     variable: '--font-nunito',
 });
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
     return (
         <html lang="en">
             <body className={nunito.variable}>
-                <ProviderComponent>{children}</ProviderComponent>
+                <QueryClientProvider>
+                    <ProviderComponent>{children}</ProviderComponent>
+                </QueryClientProvider>
             </body>
         </html>
     );

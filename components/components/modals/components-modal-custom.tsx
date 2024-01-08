@@ -680,11 +680,10 @@ import { useState, Fragment } from 'react';
                                                                 {({ selected }) => (
                                                                     <button
                                                                         type="button"
-                                                                        className={`${
-                                                                            selected
+                                                                        className={`${selected
                                                                                 ? '!border-white-light !border-b-white  text-primary !outline-none dark:!border-[#191e3a] dark:!border-b-black '
                                                                                 : ''
-                                                                        } -mb-[1px] block border border-transparent p-3.5 py-2 hover:text-primary dark:hover:border-b-black`}
+                                                                            } -mb-[1px] block border border-transparent p-3.5 py-2 hover:text-primary dark:hover:border-b-black`}
                                                                     >
                                                                         Home
                                                                     </button>
@@ -694,11 +693,10 @@ import { useState, Fragment } from 'react';
                                                                 {({ selected }) => (
                                                                     <button
                                                                         type="button"
-                                                                        className={`${
-                                                                            selected
+                                                                        className={`${selected
                                                                                 ? '!border-white-light !border-b-white  text-primary !outline-none dark:!border-[#191e3a] dark:!border-b-black '
                                                                                 : ''
-                                                                        }-mb-[1px] block border border-transparent p-3.5 py-2 hover:text-primary dark:hover:border-b-black`}
+                                                                            }-mb-[1px] block border border-transparent p-3.5 py-2 hover:text-primary dark:hover:border-b-black`}
                                                                     >
                                                                         Profile
                                                                     </button>
@@ -708,11 +706,10 @@ import { useState, Fragment } from 'react';
                                                                 {({ selected }) => (
                                                                     <button
                                                                         type="button"
-                                                                        className={`${
-                                                                            selected
+                                                                        className={`${selected
                                                                                 ? '!border-white-light !border-b-white  text-primary !outline-none dark:!border-[#191e3a] dark:!border-b-black '
                                                                                 : ''
-                                                                        }-mb-[1px] block border border-transparent p-3.5 py-2 hover:text-primary dark:hover:border-b-black`}
+                                                                            }-mb-[1px] block border border-transparent p-3.5 py-2 hover:text-primary dark:hover:border-b-black`}
                                                                     >
                                                                         Contact
                                                                     </button>

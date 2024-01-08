@@ -1,13 +1,13 @@
-import ComponentsDashboardSales from '@/components/dashboard/components-dashboard-sales';
+import DashboardLegis from '@/components/dashboard/dashboard-legis';
 import { Metadata } from 'next';
 import React from 'react';
 
 export const metadata: Metadata = {
-    title: 'Sales Admin',
+    title: 'Legis',
 };
 
-const Sales = () => {
-    return <ComponentsDashboardSales />;
+const Legis = () => {
+    return <DashboardLegis />;
 };
 
-export default Sales;
+export default Legis;
