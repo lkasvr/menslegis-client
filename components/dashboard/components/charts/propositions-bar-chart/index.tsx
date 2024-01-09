@@ -2,12 +2,13 @@
 import Dropdown from '@/components/dropdown'
 import IconHorizontalDots from '@/components/icon/icon-horizontal-dots'
 import { IRootState } from '@/store'
-import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'react'
+import React, { Suspense, useEffect, useState } from 'react'
 import ReactApexChart from 'react-apexcharts'
 import { useSelector } from 'react-redux'
 import { DeedFilters } from './actions/get-deeds'
-import IconSettings from '@/components/icon/icon-settings'
-import ModalCharts from '../modal-charts/modal-charts'
+import IconSettings from '@/components/icon/icon-settings';
+import IconXCircle from '@/components/icon/icon-x-circle';
+import ModalCharts from '../modal-charts/modal-charts';
 import { Author, getAuthors } from './actions/get-authors'
 import Flatpickr from 'react-flatpickr';
 import 'flatpickr/dist/flatpickr.css';
@@ -23,6 +24,8 @@ const PropositionsBarChart = () => {
     const [isMounted, setIsMounted] = useState(false);
     const [showModal, setShowModal] = useState(false);
 
+    const [chartData, setChartData] = useState<ChartData>();
+
     const [deedSubtype, setDeedSubtype] = useState({});
     // Select Input Data's
     const [authors, setAuthors] = useState<Author[]>([]);
@@ -36,43 +39,59 @@ const PropositionsBarChart = () => {
     const [docDate, setDocDate] = useState<any>('2022-07-05');
     const [initialDate, setInitialDate] = useState<any>('2022-07-05');
     const [finalDate, setFinalDate] = useState<any>('2022-07-05');
+
     const [filters, setFilters] = useState<DeedFilters | undefined>(undefined);
-    const [series, setSeries] = useState<{ name: string; data: number[] }[]>([]);
 
     useEffect(() => {
-        (async () => setAuthors(await getAuthors()))();
-        (async () => setTypes(await getTypes()))();
-        (async () => setSubtypes(await getSubtypes()))();
+        const fetchFiltersData = async () => {
+            try {
+                const [authors, types, subTypes] = await Promise.all([
+                    getAuthors(),
+                    getTypes(),
+                    getSubtypes(),
+                ]);
+
+                setAuthors(authors);
+                setTypes(types);
+                setSubtypes(subTypes);
+            } catch (error) {
+                console.error('Erro ao buscar dados:', error);
+                // Lidar com o erro, se necessário
+            }
+        };
+
+        fetchFiltersData();
     }, []);
-
-    const generateChartData = useCallback(async () => filters ? await getChartData(filters) : await getChartData(), [filters]);
-
-    const generateChart = (chartData: ChartData) => {
-        setIsMounted(false);
-        if (chartData.deeds[0].authors.length <= 1) setSelectedAuthor(chartData.deeds[0].authors[0].name);
-        setSelectedType(chartData.deeds[0].deedType.name);
-        setSelectedSubtype(chartData.deeds[0].deedSubtype.name);
-        setDeedSubtype(chartData.deeds[0].deedSubtype);
-        setSeries(chartData.series);
-        setIsMounted(true);
-    };
-
     useEffect(() => {
         const fetchChartData = async () => {
-            const chartData = await generateChartData();
-            generateChart(chartData);
+            const chartData = await getChartData();
+            if (chartData.deeds[0].authors.length <= 1) setSelectedAuthor(chartData.deeds[0].authors[0].name);
+            setSelectedType(chartData.deeds[0].deedType.name);
+            setSelectedSubtype(chartData.deeds[0].deedSubtype.name);
+            setDeedSubtype(chartData.deeds[0].deedSubtype);
+            setChartData(chartData);
+            setIsMounted(true);
         };
 
         fetchChartData();
     }, []);
 
-    const updateChart = async (filters?: DeedFilters) => {
+    const handleResetChart = async () => {
+        if (!filters) return;
+        setIsMounted(false);
+        const chartData = await getChartData();
+        setChartData(chartData);
+        setFilters(undefined);
+        setIsMounted(true);
+    }
+
+    const handleUpdateChart = async () => {
+        setIsMounted(false);
         const params = Object.entries(filters ?? {});
         const newFilters: Partial<DeedFilters> = params.reduce((acc, [key, value]) => (value ? { ...acc, [key]: value } : acc), {});
-
-        setFilters((prevFilters) => ({ ...prevFilters, ...newFilters }));
-        const chartData = await generateChartData();
-        generateChart(chartData);
+        const chartData = await getChartData(newFilters);
+        setChartData(chartData);
+        setIsMounted(true);
         setShowModal(false);
     }
 
@@ -237,13 +256,17 @@ const PropositionsBarChart = () => {
                         <button type="button" className="btn btn-outline-danger gap-2" onClick={() => setShowModal(false)}>
                             Cancel
                         </button>
-                        <button type="button" className="btn btn-primary ltr:ml-4 rtl:mr-4" onClick={updateChart}>
+                        <button type="button" className="btn btn-primary ltr:ml-4 rtl:mr-4" onClick={handleUpdateChart}>
                             Update Chart
                         </button>
                     </div>
                 </form>
             </ModalCharts>
-            <Suspense fallback={<Loading />}>
+            <Suspense fallback={
+                <span className="w-5 h-5 m-auto mb-10">
+                    <span className="animate-ping inline-flex h-full w-full rounded-full bg-info"></span>
+                </span>
+            }>
                 <div className="panel h-full p-0 lg:col-span-2">
                     <div className="mb-5 flex items-start justify-between border-b border-white-light p-5  dark:border-[#1b2e4b] dark:text-white-light">
                         <h5 className="text-lg font-semibold ">
@@ -263,14 +286,19 @@ const PropositionsBarChart = () => {
                                             Settings
                                         </button>
                                     </li>
+                                    <li>
+                                        <button type="button" onClick={() => handleResetChart()}>
+                                            <IconXCircle className="h-4.5 w-4.5 shrink-0 ltr:mr-1 rtl:ml-1" />
+                                            Reset
+                                        </button>
+                                    </li>
                                 </ul>
                             </Dropdown>
                         </div>
                     </div>
-
                     {isMounted && <ReactApexChart
                         options={deedsSeries.options}
-                        series={series}
+                        series={chartData?.series}
                         type="bar"
                         height={360}
                         width={'100%'}
