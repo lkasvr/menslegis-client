@@ -30,7 +30,7 @@ export type Deed = {
 }
 
 export async function getDeeds(filters?: DeedFilters): Promise<Deed[]> {
-    const res = await fetch(generatedURL('http://localhost:3000/deed', filters ?? { type: 'PROPOSICAO', subtype: 'MOCAO' }))
+    const res = await fetch(generatedURL('http://localhost:3000/deed', filters));
     if (!res.ok) throw new Error('Failed to fetch data')
     return res.json()
 }
