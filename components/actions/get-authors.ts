@@ -1,7 +1,7 @@
 'use server'
 import { cache } from 'react'
 
-export interface Author {
+export type Author = {
     id: string;
     name: string;
     created_at: string;
@@ -17,8 +17,6 @@ export interface Author {
 export const preload = () => {
   void getAuthors()
 }
-
-// export async function getAuthors(): Promise<Author> {}
 
 export const getAuthors = cache(async ():Promise<Author[]> => {
     const res = await fetch('http://localhost:3000/author')

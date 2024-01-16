@@ -1,31 +1,34 @@
 'use client'
-import Dropdown from '@/components/dropdown'
-import IconHorizontalDots from '@/components/icon/icon-horizontal-dots'
 import { IRootState } from '@/store'
 import React, { Suspense, useEffect, useState } from 'react'
 import ReactApexChart from 'react-apexcharts'
 import { useSelector } from 'react-redux'
-import { DeedFilters } from '../actions/get-deeds'
+import { DeedFilters } from '@/components/actions/get-deeds'
 import IconSettings from '@/components/icon/icon-settings';
 import IconXCircle from '@/components/icon/icon-x-circle';
-import ModalCharts from '../modal-charts/modal-charts';
-import { Author, getAuthors } from '../actions/get-authors'
+import IconTrash from '@/components/icon/icon-trash';
+import ConfigModal from '../../elements/config-modal';
+import { Author, getAuthors } from '@/components/actions/get-authors';
 import Flatpickr from 'react-flatpickr';
 import 'flatpickr/dist/flatpickr.css';
 import Loading from '@/components/layouts/loading'
-import { Type, getTypes } from '../actions/get-types'
-import { Subtype, getSubtypes } from '../actions/get-subtypes'
+import { Type, getTypes } from '../../actions/get-types'
+import { Subtype, getSubtypes } from '../../actions/get-subtypes'
 import { ChartData, Serie, getChartData } from './actions/get-chart-data'
-import { format } from 'date-fns';
-import Select, { ActionMeta, MultiValue } from 'react-select';
+import { addMonths, differenceInMonths, format, subMonths } from 'date-fns';
+import Select, { MultiValue } from 'react-select';
 import makeAnimated from 'react-select/animated';
+import DropdownMenu from '../../elements/dropdown-menu'
+import IconCopy from '@/components/icon/icon-copy'
+import { DashboardComponentProps, DashboardElementNames } from '@/components/dashboard/dashboard-legis'
 
-interface AuthorOption {
-    label: string;
-    value: string;
+interface PropositionBarChartProps extends DashboardComponentProps {
+    filters?: DeedFilters;
+    authorsRangeInputValue?: number;
 }
 
-const PropositionsBarChart = () => {
+const PropositionsBarChart = ({ id, duplicateComponent, deleteComponent, filters, authorsRangeInputValue = 3 }: PropositionBarChartProps) => {
+    const componentName = PropositionsBarChart.name as DashboardElementNames;
     const isDark = useSelector((state: IRootState) => state.themeConfig.theme === 'dark' || state.themeConfig.isDarkMode);
     const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl';
 
@@ -34,8 +37,7 @@ const PropositionsBarChart = () => {
 
     const [chartData, setChartData] = useState<ChartData>();
     const [series, setSeries] = useState<Serie[]>();
-    const [authorsQtyRange, setAuthorsQtyRange] = useState<number>(3);
-
+    const [authorsQtyRange, setAuthorsQtyRange] = useState<number>(authorsRangeInputValue);
 
     const [deedSubtype, setDeedSubtype] = useState<{ displayName: string }>();
     // Select Input Data's
@@ -47,37 +49,24 @@ const PropositionsBarChart = () => {
     const [selectedAuthors, setSelectedAuthors] = useState<Author[]>();
     const [isFilterByPeriod, setIsFilterByPeriod] = useState(true);
 
-    const [docDate, setDocDate] = useState<Date[]>();
-    const [initialDate, setInitialDate] = useState<Date[]>();
-    const [finalDate, setFinalDate] = useState<Date[]>();
-
-    const [filters, setFilters] = useState<DeedFilters | undefined>(undefined);
+    const [deedFilters, setDeedFilters] = useState<DeedFilters | undefined>(filters);
 
     useEffect(() => {
         const fetchChartData = async () => {
             try {
-                const [authors, types, subTypes] = await Promise.all([
+                const [authors, types, chartData] = await Promise.all([
                     getAuthors(),
                     getTypes(),
-                    getSubtypes(),
+                    getChartData(filters)
                 ]);
+                setDeedFilters((prevState) => ({ ...prevState, filters }));
 
-                const firstThreeAuthors = authors.slice(0, 3);
-                const authorsIds = firstThreeAuthors.map(author => author.id).join(',');
-                const chartData = await getChartData({ authorsIds });
-                setFilters((prevFilters) => ({ ...prevFilters, authorsIds }));
-
-                setAuthorsQtyRange(authors.length)
                 setAuthors(authors);
-                setSelectedAuthors(firstThreeAuthors);
                 setTypes(types);
-                setSelectedType(chartData.deeds[0].deedType.name);
-                setSubtypes(subTypes);
-                setSelectedSubtype(chartData.deeds[0].deedSubtype.name);
-                setDeedSubtype(chartData.deeds[0].deedSubtype);
 
+                setDeedSubtype(chartData.deeds[0].deedSubtype);
                 setChartData(chartData);
-                setSeries(chartData.series);
+                setSeries(chartData.series.slice(0, authorsRangeInputValue));
                 setIsMounted(true);
             } catch (error) {
                 console.error('Erro ao buscar dados:', error);
@@ -86,34 +75,37 @@ const PropositionsBarChart = () => {
         };
 
         fetchChartData();
-    }, []);
+    }, [filters, authorsRangeInputValue]);
 
     const handleResetChart = async () => {
-        if (!filters) return;
+        if (!deedFilters) return;
         setIsMounted(false);
         const chartData = await getChartData();
         setSeries(chartData?.series?.slice(0, authorsQtyRange))
-        setFilters(undefined);
+        setDeedFilters(undefined);
         setIsMounted(true);
     }
 
     const handleUpdateChart = async () => {
         setIsMounted(false);
-        const params = Object.entries(filters ?? {});
+        const params = Object.entries(deedFilters ?? {});
         const newFilters: Partial<DeedFilters> = params.reduce((acc, [key, value]) => (value ? { ...acc, [key]: value } : acc), {});
         const chartData = await getChartData(newFilters);
         setChartData(chartData);
+        setShowModal(false);
         setSeries(chartData?.series?.slice(0, authorsQtyRange))
         setIsMounted(true);
-        setShowModal(false);
     }
 
-    const handleSelectAuthors = (options: MultiValue<AuthorOption>, actionMeta: ActionMeta<AuthorOption>) => {
+    const handleSelectAuthors = (options: MultiValue<{
+        label: string;
+        value: string;
+    }>) => {
         if (options.length > 3)
-            return setSelectedAuthors(authors.filter(author => options.some(opt => opt.value === author.id)).slice(0, range1));
+            return setSelectedAuthors(authors.filter(author => options.some(opt => opt.value === author.id)).slice(0, authorsQtyRange));
 
         const authorsIds = options.map(option => option.value).join(',');
-        setFilters((prevFilters) => ({ ...prevFilters, authorsIds }));
+        setDeedFilters((prevState) => ({ ...prevState, authorsIds }));
         setSelectedAuthors(authors.filter(author => options.some(opt => opt.value === author.id)));
     }
 
@@ -202,11 +194,11 @@ const PropositionsBarChart = () => {
 
     return (
         <React.Fragment>
-            <ModalCharts showModal={showModal} setShowModal={setShowModal} title='Chart Settings'>
+            <ConfigModal showModal={showModal} setShowModal={setShowModal} title='Chart Settings'>
                 <form>
-                    {/* Author */}
+                    {/* Authors */}
                     <div className="mb-5">
-                        <label htmlFor="authors">Author</label>
+                        <label htmlFor="authors">Authors</label>
                         <Select
                             isMulti
                             id="authors"
@@ -240,41 +232,54 @@ const PropositionsBarChart = () => {
                     {/* Type */}
                     <div className="mb-5">
                         <label htmlFor="type">Tipo</label>
-                        <select id="type" className="form-select" value={selectedType} onChange={(e) => {
-                            const value = e.target.value;
-                            setFilters((prevFilters) => ({ ...prevFilters, type: value }));
-                            setSelectedType(value);
-                        }}>
+                        <select
+                            id="type"
+                            className="form-select"
+                            value={selectedType}
+                            onChange={async (e) => {
+                                const value = e.target.value;
+                                setDeedFilters((prevState) => ({ ...prevState, type: value }));
+                                setSelectedType(value);
+                                if (value) {
+                                    const subtypes = await getSubtypes({ deedType: value });
+                                    setSubtypes(subtypes);
+                                } else { setSubtypes([]) }
+                            }}>
                             <option value="">Select type</option>
-                            {types?.map(({ name, displayName }) => (<option key={name} value={name}>{displayName}</option>))}
+                            {types?.map(({ id, name, displayName }) => (<option key={id} value={name}>{displayName}</option>))}
                         </select>
                     </div>
                     {/* Subtype */}
                     <div className="mb-5">
                         <label htmlFor="subtype">Sub-Tipo</label>
-                        <select id="subtype" className="form-select" value={selectedSubtype} onChange={(e) => {
-                            const value = e.target.value;
-                            setFilters((prevFilters) => ({ ...prevFilters, subtype: value }));
-                            setSelectedSubtype(value);
-                        }}>
+                        <select
+                            id="subtype"
+                            className="form-select"
+                            value={selectedSubtype}
+                            onChange={(e) => {
+                                const value = e.target.value;
+                                setDeedFilters((prevState) => ({ ...prevState, subtype: value }));
+                                setSelectedSubtype(value);
+                            }}>
                             <option value="">Select subtype</option>
-                            {subtypes?.map(({ name, displayName }) => (<option key={name} value={name}>{displayName}</option>))}
+                            {subtypes?.map(({ id, name, displayName }) => (<option key={id} value={name}>{displayName}</option>))}
                         </select>
                     </div>
+                    {/* DocDate */}
                     <div className="mb-5">
                         <label htmlFor="tag">Data do Documento</label>
                         <Flatpickr
-                            value={docDate}
+                            value={deedFilters?.date}
                             options={{ dateFormat: 'Y-m-d', position: isRtl ? 'auto right' : 'auto left' }}
                             className="form-input"
                             disabled={isFilterByPeriod}
                             onChange={(date) => {
                                 const formatedDate = date[0] && format(new Date(date[0]), 'yyyy-MM-dd');
-                                setFilters((prevFilters) => ({ ...prevFilters, date: formatedDate }));
-                                setDocDate(date);
+                                setDeedFilters((prevState) => ({ ...prevState, date: formatedDate }));
                             }}
                         />
                     </div>
+                    {/* Period */}
                     <div className="mt-5 flex flex-nowrap">
                         <label htmlFor="tag" className='mr-5'>Filtrar por período:</label>
                         <label className="w-12 h-6 relative">
@@ -286,10 +291,11 @@ const PropositionsBarChart = () => {
                                 onChange={(e) => {
                                     const checked = e.target.checked;
                                     setIsFilterByPeriod(checked);
-                                    if (!checked) {
-                                        setInitialDate(undefined);
-                                        setFinalDate(undefined);
-                                    } else { setDocDate(undefined); }
+                                    if (checked) {
+                                        setDeedFilters((prevState) => ({ ...prevState, date: undefined }));
+                                    } else {
+                                        setDeedFilters((prevState) => ({ ...prevState, initialDate: undefined, finalDate: undefined }));
+                                    }
                                 }}
                             />
                             <span className="outline_checkbox border-2 border-[#ebedf2] dark:border-white-dark block h-full rounded-full before:absolute before:left-1 before:bg-[#ebedf2] dark:before:bg-white-dark before:bottom-1 before:w-4 before:h-4 before:rounded-full peer-checked:before:left-7 peer-checked:border-primary peer-checked:before:bg-primary before:transition-all before:duration-300"></span>
@@ -299,27 +305,48 @@ const PropositionsBarChart = () => {
                         <label htmlFor="tag" className='mr-5'>Período</label>
                         <div className="w-full flex flex-row flex-nowrap justify-between">
                             <Flatpickr
-                                value={initialDate}
+                                value={deedFilters?.initialDate}
                                 options={{ dateFormat: 'Y-m-d', position: isRtl ? 'auto right' : 'auto left' }}
                                 className="form-input w-[48%]"
                                 onChange={(date) => {
                                     const formatedDate = date[0] && format(new Date(date[0]), 'yyyy-MM-dd');
-                                    setFilters((prevFilters) => ({ ...prevFilters, initialDate: formatedDate }));
-                                    setInitialDate(date);
+
+                                    if (!deedFilters?.finalDate) {
+                                        const finalFormatedDate = format(addMonths(formatedDate, 12), 'yyyy-MM-dd');
+                                        setDeedFilters((prevState) => ({ ...prevState, initialDate: formatedDate, finalDate: finalFormatedDate }));
+                                    } else {
+                                        if (differenceInMonths(deedFilters.finalDate, formatedDate) !== 11) {
+                                            setDeedFilters((prevState) => ({ ...prevState, finalDate: undefined, }));
+                                            alert('O período deve comportar 12 meses');
+                                            return;
+                                        }
+                                        setDeedFilters((prevState) => ({ ...prevState, initialDate: formatedDate, }));
+                                    }
                                 }}
                             />
                             <Flatpickr
-                                value={finalDate}
+                                value={deedFilters?.finalDate}
                                 options={{ dateFormat: 'Y-m-d', position: isRtl ? 'auto right' : 'auto left' }}
                                 className="form-input w-[48%]"
                                 onChange={(date) => {
                                     const formatedDate = date[0] && format(new Date(date[0]), 'yyyy-MM-dd');
-                                    setFilters((prevFilters) => ({ ...prevFilters, finalDate: formatedDate }));
-                                    setFinalDate(date);
+
+                                    if (!deedFilters?.initialDate) {
+                                        const initialFormatedDate = format(subMonths(formatedDate, 12), 'yyyy-MM-dd');
+                                        setDeedFilters((prevState) => ({ ...prevState, initialDate: initialFormatedDate, finalDate: formatedDate }));
+                                    } else {
+                                        if (differenceInMonths(formatedDate, deedFilters.initialDate) !== 11) {
+                                            setDeedFilters((prevState) => ({ ...prevState, initialDate: undefined, }));
+                                            alert('O período deve comportar 12 meses');
+                                            return;
+                                        }
+                                        setDeedFilters((prevState) => ({ ...prevState, finalDate: formatedDate, }));
+                                    }
                                 }}
                             />
                         </div>
                     </div>
+                    {/* BUTTONS */}
                     <div className="mt-8 flex items-center justify-end">
                         <button type="button" className="btn btn-outline-danger gap-2" onClick={() => setShowModal(false)}>
                             Cancel
@@ -329,7 +356,7 @@ const PropositionsBarChart = () => {
                         </button>
                     </div>
                 </form>
-            </ModalCharts>
+            </ConfigModal>
             <Suspense fallback={
                 <span className="w-5 h-5 m-auto mb-10">
                     <span className="animate-ping inline-flex h-full w-full rounded-full bg-info"></span>
@@ -337,32 +364,39 @@ const PropositionsBarChart = () => {
             }>
                 <div className="panel h-full p-0 lg:col-span-2">
                     <div className="mb-5 flex items-start justify-between border-b border-white-light p-5  dark:border-[#1b2e4b] dark:text-white-light">
-                        <h5 className="text-lg font-semibold ">
-                            {`Quantidade mensal de ${deedSubtype?.displayName} por parlamentar, período: ${chartData?.period}`}
+                        <h5 className="w-full text-lg font-semibold flex items-center justify-between">
+                            {`Quantidade mensal de ${deedSubtype?.displayName} por parlamentar`}
+                            <span className="mr-6 text-sm text-gray-400">{chartData?.period}</span>
                         </h5>
-                        <div className="dropdown">
-                            <Dropdown
-                                offset={[0, 5]}
-                                placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
-                                btnClassName="hover:text-primary"
-                                button={<IconHorizontalDots className="text-black/70 hover:!text-primary dark:text-white/70" />}
-                            >
-                                <ul>
-                                    <li>
-                                        <button type="button" onClick={() => handleResetChart()}>
-                                            <IconXCircle className="h-4.5 w-4.5 shrink-0 ltr:mr-1 rtl:ml-1" />
-                                            Reset
-                                        </button>
-                                    </li>
-                                    <li>
-                                        <button type="button" onClick={() => setShowModal(true)}>
-                                            <IconSettings className="h-4.5 w-4.5 shrink-0 ltr:mr-1 rtl:ml-1" />
-                                            Settings
-                                        </button>
-                                    </li>
-                                </ul>
-                            </Dropdown>
-                        </div>
+                        <DropdownMenu
+                            options={
+                                [
+                                    {
+                                        icon: <IconTrash className="h-4.5 w-4.5 shrink-0 ltr:mr-1 rtl:ml-1" />,
+                                        text: 'Delete',
+                                        onClick: () => deleteComponent(id)
+                                    },
+                                    {
+                                        icon: <IconCopy className="h-4.5 w-4.5 shrink-0 ltr:mr-1 rtl:ml-1" />,
+                                        text: 'Duplicate',
+                                        onClick: () => duplicateComponent(
+                                            componentName,
+                                            { filters: deedFilters, authorsRangeInputValue: authorsQtyRange }
+                                        )
+                                    },
+                                    {
+                                        icon: <IconXCircle className="h-4.5 w-4.5 shrink-0 ltr:mr-1 rtl:ml-1" />,
+                                        text: 'Reset',
+                                        onClick: () => handleResetChart()
+                                    },
+                                    {
+                                        icon: <IconSettings className="h-4.5 w-4.5 shrink-0 ltr:mr-1 rtl:ml-1" />,
+                                        text: 'Settings',
+                                        onClick: () => setShowModal(true)
+                                    }
+                                ]
+                            }
+                        />
                     </div>
                     {isMounted && <ReactApexChart
                         options={deedsSeries.options}

@@ -143,16 +143,16 @@ const Banner = ({ title }: { title: string; }) => {
                         <div className="whitespace-nowrap font-medium text-black dark:text-white">Popular topics :</div>
                         <div className="flex items-center justify-center gap-2 sm:gap-5">
                             <Link href="#" className="duration-300 hover:underline">
-                                Sales
+                                Legislation
                             </Link>
                             <Link href="#" className="duration-300 hover:underline">
                                 Charts
                             </Link>
                             <Link href="#" className="duration-300 hover:underline">
-                                Finance
+                                Compliance
                             </Link>
                             <Link href="#" className="duration-300 hover:underline">
-                                Trending
+                                Help
                             </Link>
                         </div>
                     </div>

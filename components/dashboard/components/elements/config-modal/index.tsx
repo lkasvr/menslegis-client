@@ -2,7 +2,7 @@ import IconX from "@/components/icon/icon-x";
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment } from "react";
 
-const ModalCharts = ({ showModal, setShowModal, title, children }: {
+const ConfigModal = ({ showModal, setShowModal, title, children }: {
     showModal: boolean;
     setShowModal: (argument: boolean) => void;
     title: string;
@@ -58,4 +58,4 @@ const ModalCharts = ({ showModal, setShowModal, title, children }: {
     )
 }
 
-export default ModalCharts;
+export default ConfigModal;

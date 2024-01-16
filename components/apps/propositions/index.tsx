@@ -7,19 +7,19 @@ import IconMenu from '@/components/icon/icon-menu';
 import IconNotes from '@/components/icon/icon-notes';
 import IconNotesEdit from '@/components/icon/icon-notes-edit';
 import IconPencil from '@/components/icon/icon-pencil';
-import IconPlus from '@/components/icon/icon-plus';
 import IconSquareRotated from '@/components/icon/icon-square-rotated';
 import IconStar from '@/components/icon/icon-star';
 import IconTrashLines from '@/components/icon/icon-trash-lines';
-import IconUser from '@/components/icon/icon-user';
+import IconFile from '@/components/icon/icon-txt-file';
 import IconX from '@/components/icon/icon-x';
 import { IRootState } from '@/store';
 import { Transition, Dialog } from '@headlessui/react';
 import React, { Fragment, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
+import { Deed, getDeeds } from '@/components/actions/get-deeds';
 
-const ComponentsAppsNotes = () => {
+const PropositionList = () => {
     const [notesList, setNoteList] = useState([
         {
             id: 1,
@@ -240,6 +240,8 @@ const ComponentsAppsNotes = () => {
     const [selectedTab, setSelectedTab] = useState<any>('all');
     const [deletedNote, setDeletedNote] = useState<any>(null);
 
+    const [filteredDeedsList, setFilteredDeedsList] = useState<Deed[]>([]);
+
     const searchNotes = () => {
         if (selectedTab !== 'fav') {
             if (selectedTab !== 'all' || selectedTab === 'delete') {
@@ -250,44 +252,6 @@ const ComponentsAppsNotes = () => {
         } else {
             setFilterdNotesList(notesList.filter((d) => d.isFav));
         }
-    };
-
-    const saveNote = () => {
-        if (!params.title) {
-            showMessage('Title is required.', 'error');
-            return false;
-        }
-        if (params.id) {
-            //update task
-            let note: any = notesList.find((d: any) => d.id === params.id);
-            note.title = params.title;
-            note.user = params.user;
-            note.description = params.description;
-            note.tag = params.tag;
-        } else {
-            //add note
-            let maxNoteId = notesList.reduce((max: any, character: any) => (character.id > max ? character.id : max), notesList[0].id);
-            if (!maxNoteId) {
-                maxNoteId = 0;
-            }
-            let dt = new Date();
-            let note = {
-                id: maxNoteId + 1,
-                title: params.title,
-                user: params.user,
-                thumb: 'profile-21.jpeg',
-                description: params.description,
-                date: dt.getDate() + '/' + Number(dt.getMonth()) + 1 + '/' + dt.getFullYear(),
-                isFav: false,
-                tag: params.tag,
-            };
-
-            notesList.splice(0, 0, note);
-            searchNotes();
-        }
-        showMessage('Note has been saved successfully.');
-        setAddContactModal(false);
-        searchNotes();
     };
 
     const tabChanged = (type: string) => {
@@ -315,16 +279,6 @@ const ComponentsAppsNotes = () => {
         if (selectedTab !== 'all' || selectedTab === 'delete') {
             searchNotes();
         }
-    };
-
-    const changeValue = (e: any) => {
-        const { value, id } = e.target;
-        setParams({ ...params, [id]: value });
-    };
-
-    const deleteNoteConfirm = (note: any) => {
-        setDeletedNote(note);
-        setIsDeleteNoteModal(true);
     };
 
     const viewNote = (note: any) => {
@@ -369,12 +323,24 @@ const ComponentsAppsNotes = () => {
         searchNotes();
     }, [selectedTab, notesList]);
 
+    useEffect(() => {
+        async function fetchDeeds() {
+            const deeds = await getDeeds({ isMostRecent: 'true' });
+            setFilteredDeedsList(deeds);
+        }
+
+        fetchDeeds();
+    }, [selectedTab, notesList]);
+
     const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl';
 
     return (
         <div>
             <div className="relative flex h-full gap-5 sm:h-[calc(100vh_-_150px)]">
-                <div className={`absolute z-10 hidden h-full w-full rounded-md bg-black/60 ${isShowNoteMenu ? '!block xl:!hidden' : ''}`} onClick={() => setIsShowNoteMenu(!isShowNoteMenu)}></div>
+                <div
+                    className={`absolute z-10 hidden h-full w-full rounded-md bg-black/60 ${isShowNoteMenu ? '!block xl:!hidden' : ''}`}
+                    onClick={() => setIsShowNoteMenu(!isShowNoteMenu)}>
+                </div>
                 <div
                     className={`panel
                     absolute
@@ -397,7 +363,7 @@ const ComponentsAppsNotes = () => {
                             <div className="shrink-0">
                                 <IconNotes />
                             </div>
-                            <h3 className="text-lg font-semibold ltr:ml-3 rtl:mr-3">Notes</h3>
+                            <h3 className="text-lg font-semibold ltr:ml-3 rtl:mr-3">Propositions</h3>
                         </div>
 
                         <div className="my-4 h-px w-full border-b border-white-light dark:border-[#1b2e4b]"></div>
@@ -405,21 +371,19 @@ const ComponentsAppsNotes = () => {
                             <div className="space-y-1">
                                 <button
                                     type="button"
-                                    className={`flex h-10 w-full items-center justify-between rounded-md p-2 font-medium hover:bg-white-dark/10 hover:text-primary dark:hover:bg-[#181F32] dark:hover:text-primary ${
-                                        selectedTab === 'all' && 'bg-gray-100 text-primary dark:bg-[#181F32] dark:text-primary'
-                                    }`}
+                                    className={`flex h-10 w-full items-center justify-between rounded-md p-2 font-medium hover:bg-white-dark/10 hover:text-primary dark:hover:bg-[#181F32] dark:hover:text-primary ${selectedTab === 'all' && 'bg-gray-100 text-primary dark:bg-[#181F32] dark:text-primary'
+                                        }`}
                                     onClick={() => tabChanged('all')}
                                 >
                                     <div className="flex items-center">
                                         <IconNotesEdit className="shrink-0" />
-                                        <div className="ltr:ml-3 rtl:mr-3">All Notes</div>
+                                        <div className="ltr:ml-3 rtl:mr-3">All Propositions</div>
                                     </div>
                                 </button>
                                 <button
                                     type="button"
-                                    className={`flex h-10 w-full items-center justify-between rounded-md p-2 font-medium hover:bg-white-dark/10 hover:text-primary dark:hover:bg-[#181F32] dark:hover:text-primary ${
-                                        selectedTab === 'fav' && 'bg-gray-100 text-primary dark:bg-[#181F32] dark:text-primary'
-                                    }`}
+                                    className={`flex h-10 w-full items-center justify-between rounded-md p-2 font-medium hover:bg-white-dark/10 hover:text-primary dark:hover:bg-[#181F32] dark:hover:text-primary ${selectedTab === 'fav' && 'bg-gray-100 text-primary dark:bg-[#181F32] dark:text-primary'
+                                        }`}
                                     onClick={() => tabChanged('fav')}
                                 >
                                     <div className="flex items-center">
@@ -431,9 +395,8 @@ const ComponentsAppsNotes = () => {
                                 <div className="px-1 py-3 text-white-dark">Tags</div>
                                 <button
                                     type="button"
-                                    className={`flex h-10 w-full items-center rounded-md p-1 font-medium text-primary duration-300 hover:bg-white-dark/10 ltr:hover:pl-3 rtl:hover:pr-3 dark:hover:bg-[#181F32] ${
-                                        selectedTab === 'personal' && 'bg-gray-100 ltr:pl-3 rtl:pr-3 dark:bg-[#181F32]'
-                                    }`}
+                                    className={`flex h-10 w-full items-center rounded-md p-1 font-medium text-primary duration-300 hover:bg-white-dark/10 ltr:hover:pl-3 rtl:hover:pr-3 dark:hover:bg-[#181F32] ${selectedTab === 'personal' && 'bg-gray-100 ltr:pl-3 rtl:pr-3 dark:bg-[#181F32]'
+                                        }`}
                                     onClick={() => tabChanged('personal')}
                                 >
                                     <IconSquareRotated className="shrink-0 fill-primary" />
@@ -441,9 +404,8 @@ const ComponentsAppsNotes = () => {
                                 </button>
                                 <button
                                     type="button"
-                                    className={`flex h-10 w-full items-center rounded-md p-1 font-medium text-warning duration-300 hover:bg-white-dark/10 ltr:hover:pl-3 rtl:hover:pr-3 dark:hover:bg-[#181F32] ${
-                                        selectedTab === 'work' && 'bg-gray-100 ltr:pl-3 rtl:pr-3 dark:bg-[#181F32]'
-                                    }`}
+                                    className={`flex h-10 w-full items-center rounded-md p-1 font-medium text-warning duration-300 hover:bg-white-dark/10 ltr:hover:pl-3 rtl:hover:pr-3 dark:hover:bg-[#181F32] ${selectedTab === 'work' && 'bg-gray-100 ltr:pl-3 rtl:pr-3 dark:bg-[#181F32]'
+                                        }`}
                                     onClick={() => tabChanged('work')}
                                 >
                                     <IconSquareRotated className="shrink-0 fill-warning" />
@@ -451,9 +413,8 @@ const ComponentsAppsNotes = () => {
                                 </button>
                                 <button
                                     type="button"
-                                    className={`flex h-10 w-full items-center rounded-md p-1 font-medium text-info duration-300 hover:bg-white-dark/10 ltr:hover:pl-3 rtl:hover:pr-3 dark:hover:bg-[#181F32] ${
-                                        selectedTab === 'social' && 'bg-gray-100 ltr:pl-3 rtl:pr-3 dark:bg-[#181F32]'
-                                    }`}
+                                    className={`flex h-10 w-full items-center rounded-md p-1 font-medium text-info duration-300 hover:bg-white-dark/10 ltr:hover:pl-3 rtl:hover:pr-3 dark:hover:bg-[#181F32] ${selectedTab === 'social' && 'bg-gray-100 ltr:pl-3 rtl:pr-3 dark:bg-[#181F32]'
+                                        }`}
                                     onClick={() => tabChanged('social')}
                                 >
                                     <IconSquareRotated className="shrink-0 fill-info" />
@@ -461,9 +422,8 @@ const ComponentsAppsNotes = () => {
                                 </button>
                                 <button
                                     type="button"
-                                    className={`flex h-10 w-full items-center rounded-md p-1 font-medium text-danger duration-300 hover:bg-white-dark/10 ltr:hover:pl-3 rtl:hover:pr-3 dark:hover:bg-[#181F32] ${
-                                        selectedTab === 'important' && 'bg-gray-100 ltr:pl-3 rtl:pr-3 dark:bg-[#181F32]'
-                                    }`}
+                                    className={`flex h-10 w-full items-center rounded-md p-1 font-medium text-danger duration-300 hover:bg-white-dark/10 ltr:hover:pl-3 rtl:hover:pr-3 dark:hover:bg-[#181F32] ${selectedTab === 'important' && 'bg-gray-100 ltr:pl-3 rtl:pr-3 dark:bg-[#181F32]'
+                                        }`}
                                     onClick={() => tabChanged('important')}
                                 >
                                     <IconSquareRotated className="shrink-0 fill-danger" />
@@ -472,62 +432,50 @@ const ComponentsAppsNotes = () => {
                             </div>
                         </PerfectScrollbar>
                     </div>
-                    <div className="absolute bottom-0 w-full p-4 ltr:left-0 rtl:right-0">
-                        <button className="btn btn-primary w-full" type="button" onClick={() => editNote()}>
-                            <IconPlus className="h-5 w-5 shrink-0 ltr:mr-2 rtl:ml-2" />
-                            Add New Note
-                        </button>
-                    </div>
                 </div>
+
                 <div className="panel h-full flex-1 overflow-auto">
                     <div className="pb-5">
                         <button type="button" className="hover:text-primary xl:hidden" onClick={() => setIsShowNoteMenu(!isShowNoteMenu)}>
                             <IconMenu />
                         </button>
                     </div>
-                    {filterdNotesList.length ? (
+                    {filteredDeedsList.length ? (
                         <div className="min-h-[400px] sm:min-h-[300px]">
                             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
-                                {filterdNotesList.map((note: any) => {
+                                {filteredDeedsList.map((deed) => {
                                     return (
                                         <div
-                                            className={`panel pb-12 ${
-                                                note.tag === 'personal'
-                                                    ? 'bg-primary-light shadow-primary'
-                                                    : note.tag === 'work'
+                                            className={`panel pb-12 ${deed.status === 'personal'
+                                                ? 'bg-primary-light shadow-primary'
+                                                : deed.status === 'work'
                                                     ? 'bg-warning-light shadow-warning'
-                                                    : note.tag === 'social'
-                                                    ? 'bg-info-light shadow-info'
-                                                    : note.tag === 'important'
-                                                    ? 'bg-danger-light shadow-danger'
-                                                    : 'dark:shadow-dark'
-                                            }`}
-                                            key={note.id}
+                                                    : deed.status === 'social'
+                                                        ? 'bg-info-light shadow-info'
+                                                        : deed.status === 'important'
+                                                            ? 'bg-danger-light shadow-danger'
+                                                            : 'dark:shadow-dark'
+                                                }`}
+                                            key={deed.id}
                                         >
                                             <div className="min-h-[142px]">
                                                 <div className="flex justify-between">
                                                     <div className="flex w-max items-center">
                                                         <div className="flex-none">
-                                                            {note.thumb && (
-                                                                <div className="rounded-full bg-gray-300 p-0.5 dark:bg-gray-700">
-                                                                    <img className="h-8 w-8 rounded-full object-cover" alt="img" src={`/assets/images/${note.thumb}`} />
-                                                                </div>
-                                                            )}
-
-                                                            {!note.thumb && note.user && (
-                                                                <div className="grid h-8 w-8 place-content-center rounded-full bg-gray-300 text-sm font-semibold dark:bg-gray-700">
-                                                                    {note.user.charAt(0) + '' + note.user.charAt(note.user.indexOf('') + 1)}
-                                                                </div>
-                                                            )}
-                                                            {!note.thumb && !note.user && (
-                                                                <div className="rounded-full bg-gray-300 p-2 dark:bg-gray-700">
-                                                                    <IconUser className="h-4.5 w-4.5" />
-                                                                </div>
-                                                            )}
+                                                            <IconFile className={`h-8 w-8 ${deed.status === 'personal'
+                                                                ? 'text-primary'
+                                                                : deed.status === 'work'
+                                                                    ? 'text-warning'
+                                                                    : deed.status === 'social'
+                                                                        ? 'text-info'
+                                                                        : deed.status === 'important'
+                                                                            ? 'text-danger'
+                                                                            : 'dark:shadow-dark'
+                                                                }`} />
                                                         </div>
                                                         <div className="ltr:ml-2 rtl:mr-2">
-                                                            <div className="font-semibold">{note.user}</div>
-                                                            <div className="text-sx text-white-dark">{note.date}</div>
+                                                            <div className="font-semibold">{deed.name}</div>
+                                                            <div className="text-sx text-white-dark">{deed.docDate}</div>
                                                         </div>
                                                     </div>
                                                     <div className="dropdown">
@@ -539,19 +487,7 @@ const ComponentsAppsNotes = () => {
                                                         >
                                                             <ul className="text-sm font-medium">
                                                                 <li>
-                                                                    <button type="button" onClick={() => editNote(note)}>
-                                                                        <IconPencil className="h-4 w-4 shrink-0 ltr:mr-3 rtl:ml-3" />
-                                                                        Edit
-                                                                    </button>
-                                                                </li>
-                                                                <li>
-                                                                    <button type="button" onClick={() => deleteNoteConfirm(note)}>
-                                                                        <IconTrashLines className="h-4.5 w-4.5 shrink-0 ltr:mr-3 rtl:ml-3" />
-                                                                        Delete
-                                                                    </button>
-                                                                </li>
-                                                                <li>
-                                                                    <button type="button" onClick={() => viewNote(note)}>
+                                                                    <button type="button" onClick={() => viewNote(deed)}>
                                                                         <IconEye className="h-4.5 w-4.5 shrink-0 ltr:mr-3 rtl:ml-3" />
                                                                         View
                                                                     </button>
@@ -561,8 +497,8 @@ const ComponentsAppsNotes = () => {
                                                     </div>
                                                 </div>
                                                 <div>
-                                                    <h4 className="mt-4 font-semibold">{note.title}</h4>
-                                                    <p className="mt-2 text-white-dark">{note.description}</p>
+                                                    <h4 className="mt-4 font-semibold">{deed.authors.map(a => (<span key={a.id}>{a.name}</span>))}</h4>
+                                                    <p className="mt-2 text-white-dark">{deed.description}</p>
                                                 </div>
                                             </div>
                                             <div className="absolute bottom-5 left-0 w-full px-5">
@@ -572,30 +508,29 @@ const ComponentsAppsNotes = () => {
                                                             <Dropdown
                                                                 offset={[0, 5]}
                                                                 placement={`${isRtl ? 'bottom-end' : 'bottom-start'}`}
-                                                                btnClassName={`${
-                                                                    note.tag === 'personal'
-                                                                        ? 'text-primary'
-                                                                        : note.tag === 'work'
+                                                                btnClassName={`${deed.status === 'personal'
+                                                                    ? 'text-primary'
+                                                                    : deed.status === 'work'
                                                                         ? 'text-warning'
-                                                                        : note.tag === 'social'
-                                                                        ? 'text-info'
-                                                                        : note.tag === 'important'
-                                                                        ? 'text-danger'
-                                                                        : ''
-                                                                }`}
+                                                                        : deed.status === 'social'
+                                                                            ? 'text-info'
+                                                                            : deed.status === 'important'
+                                                                                ? 'text-danger'
+                                                                                : ''
+                                                                    }`}
                                                                 button={
                                                                     <span>
                                                                         <IconSquareRotated
                                                                             className={
-                                                                                note.tag === 'personal'
+                                                                                deed.status === 'personal'
                                                                                     ? 'fill-primary'
-                                                                                    : note.tag === 'work'
-                                                                                    ? 'fill-warning'
-                                                                                    : note.tag === 'social'
-                                                                                    ? 'fill-info'
-                                                                                    : note.tag === 'important'
-                                                                                    ? 'fill-danger'
-                                                                                    : ''
+                                                                                    : deed.status === 'work'
+                                                                                        ? 'fill-warning'
+                                                                                        : deed.status === 'social'
+                                                                                            ? 'fill-info'
+                                                                                            : deed.status === 'important'
+                                                                                                ? 'fill-danger'
+                                                                                                : ''
                                                                             }
                                                                         />
                                                                     </span>
@@ -603,25 +538,25 @@ const ComponentsAppsNotes = () => {
                                                             >
                                                                 <ul className="text-sm font-medium">
                                                                     <li>
-                                                                        <button type="button" onClick={() => setTag(note, 'personal')}>
+                                                                        <button type="button" onClick={() => setTag(deed, 'personal')}>
                                                                             <IconSquareRotated className="fill-primary text-primary ltr:mr-2 rtl:ml-2" />
                                                                             Personal
                                                                         </button>
                                                                     </li>
                                                                     <li>
-                                                                        <button type="button" onClick={() => setTag(note, 'work')}>
+                                                                        <button type="button" onClick={() => setTag(deed, 'work')}>
                                                                             <IconSquareRotated className="fill-warning text-warning ltr:mr-2 rtl:ml-2" />
                                                                             Work
                                                                         </button>
                                                                     </li>
                                                                     <li>
-                                                                        <button type="button" onClick={() => setTag(note, 'social')}>
+                                                                        <button type="button" onClick={() => setTag(deed, 'social')}>
                                                                             <IconSquareRotated className="fill-info text-info ltr:mr-2 rtl:ml-2" />
                                                                             Social
                                                                         </button>
                                                                     </li>
                                                                     <li>
-                                                                        <button type="button" onClick={() => setTag(note, 'important')}>
+                                                                        <button type="button" onClick={() => setTag(deed, 'important')}>
                                                                             <IconSquareRotated className="fill-danger text-danger ltr:mr-2 rtl:ml-2" />
                                                                             Important
                                                                         </button>
@@ -631,11 +566,8 @@ const ComponentsAppsNotes = () => {
                                                         </div>
                                                     </div>
                                                     <div className="flex items-center">
-                                                        <button type="button" className="text-danger" onClick={() => deleteNoteConfirm(note)}>
-                                                            <IconTrashLines />
-                                                        </button>
-                                                        <button type="button" className="group text-warning ltr:ml-2 rtl:mr-2" onClick={() => setFav(note)}>
-                                                            <IconStar className={`h-4.5 w-4.5 group-hover:fill-warning ${note.isFav && 'fill-warning'}`} />
+                                                        <button type="button" className="group text-warning ltr:ml-2 rtl:mr-2" onClick={() => setFav(deed)}>
+                                                            <IconStar className={`h-4.5 w-4.5 group-hover:fill-warning ${deed.status && 'fill-warning'}`} />
                                                         </button>
                                                     </div>
                                                 </div>
@@ -648,109 +580,6 @@ const ComponentsAppsNotes = () => {
                     ) : (
                         <div className="flex h-full min-h-[400px] items-center justify-center text-lg font-semibold sm:min-h-[300px]">No data available</div>
                     )}
-
-                    <Transition appear show={addContactModal} as={Fragment}>
-                        <Dialog as="div" open={addContactModal} onClose={() => setAddContactModal(false)} className="relative z-50">
-                            <Transition.Child
-                                as={Fragment}
-                                enter="ease-out duration-300"
-                                enterFrom="opacity-0"
-                                enterTo="opacity-100"
-                                leave="ease-in duration-200"
-                                leaveFrom="opacity-100"
-                                leaveTo="opacity-0"
-                            >
-                                <div className="fixed inset-0 bg-[black]/60" />
-                            </Transition.Child>
-
-                            <div className="fixed inset-0 overflow-y-auto">
-                                <div className="flex min-h-full items-center justify-center px-4 py-8">
-                                    <Transition.Child
-                                        as={Fragment}
-                                        enter="ease-out duration-300"
-                                        enterFrom="opacity-0 scale-95"
-                                        enterTo="opacity-100 scale-100"
-                                        leave="ease-in duration-200"
-                                        leaveFrom="opacity-100 scale-100"
-                                        leaveTo="opacity-0 scale-95"
-                                    >
-                                        <Dialog.Panel className="panel w-full max-w-lg overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark">
-                                            <button
-                                                type="button"
-                                                onClick={() => setAddContactModal(false)}
-                                                className="absolute top-4 text-gray-400 outline-none hover:text-gray-800 ltr:right-4 rtl:left-4 dark:hover:text-gray-600"
-                                            >
-                                                <IconX />
-                                            </button>
-                                            <div className="bg-[#fbfbfb] py-3 text-lg font-medium ltr:pl-5 ltr:pr-[50px] rtl:pl-[50px] rtl:pr-5 dark:bg-[#121c2c]">
-                                                {params.id ? 'Edit Note' : 'Add Note'}
-                                            </div>
-                                            <div className="p-5">
-                                                <form>
-                                                    <div className="mb-5">
-                                                        <label htmlFor="title">Title</label>
-                                                        <input id="title" type="text" placeholder="Enter Title" className="form-input" value={params.title} onChange={(e) => changeValue(e)} />
-                                                    </div>
-                                                    <div className="mb-5">
-                                                        <label htmlFor="name">User Name</label>
-                                                        <select id="user" className="form-select" value={params.user} onChange={(e) => changeValue(e)}>
-                                                            <option value="">Select User</option>
-                                                            <option value="Max Smith">Max Smith</option>
-                                                            <option value="John Doe">John Doe</option>
-                                                            <option value="Kia Jain">Kia Jain</option>
-                                                            <option value="Karena Courtliff">Karena Courtliff</option>
-                                                            <option value="Vladamir Koschek">Vladamir Koschek</option>
-                                                            <option value="Robert Garcia">Robert Garcia</option>
-                                                            <option value="Marie Hamilton">Marie Hamilton</option>
-                                                            <option value="Megan Meyers">Megan Meyers</option>
-                                                            <option value="Angela Hull">Angela Hull</option>
-                                                            <option value="Karen Wolf">Karen Wolf</option>
-                                                            <option value="Jasmine Barnes">Jasmine Barnes</option>
-                                                            <option value="Thomas Cox">Thomas Cox</option>
-                                                            <option value="Marcus Jones">Marcus Jones</option>
-                                                            <option value="Matthew Gray">Matthew Gray</option>
-                                                            <option value="Chad Davis">Chad Davis</option>
-                                                            <option value="Linda Drake">Linda Drake</option>
-                                                            <option value="Kathleen Flores">Kathleen Flores</option>
-                                                        </select>
-                                                    </div>
-                                                    <div className="mb-5">
-                                                        <label htmlFor="tag">Tag</label>
-                                                        <select id="tag" className="form-select" value={params.tag} onChange={(e) => changeValue(e)}>
-                                                            <option value="">None</option>
-                                                            <option value="personal">Personal</option>
-                                                            <option value="work">Work</option>
-                                                            <option value="social">Social</option>
-                                                            <option value="important">Important</option>
-                                                        </select>
-                                                    </div>
-                                                    <div className="mb-5">
-                                                        <label htmlFor="desc">Description</label>
-                                                        <textarea
-                                                            id="description"
-                                                            rows={3}
-                                                            className="form-textarea min-h-[130px] resize-none"
-                                                            placeholder="Enter Description"
-                                                            value={params.description}
-                                                            onChange={(e) => changeValue(e)}
-                                                        ></textarea>
-                                                    </div>
-                                                    <div className="mt-8 flex items-center justify-end">
-                                                        <button type="button" className="btn btn-outline-danger gap-2" onClick={() => setAddContactModal(false)}>
-                                                            Cancel
-                                                        </button>
-                                                        <button type="button" className="btn btn-primary ltr:ml-4 rtl:mr-4" onClick={saveNote}>
-                                                            {params.id ? 'Update Note' : 'Add Note'}
-                                                        </button>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </Dialog.Panel>
-                                    </Transition.Child>
-                                </div>
-                            </div>
-                        </Dialog>
-                    </Transition>
 
                     <Transition appear show={isDeleteNoteModal} as={Fragment}>
                         <Dialog as="div" open={isDeleteNoteModal} onClose={() => setIsDeleteNoteModal(false)} className="relative z-50">
@@ -846,12 +675,11 @@ const ComponentsAppsNotes = () => {
                                                 {params.tag && (
                                                     <button
                                                         type="button"
-                                                        className={`badge badge-outline-primary rounded-3xl capitalize ltr:mr-3 rtl:ml-3 ${
-                                                            (params.tag === 'personal' && 'shadow-primary',
+                                                        className={`badge badge-outline-primary rounded-3xl capitalize ltr:mr-3 rtl:ml-3 ${(params.tag === 'personal' && 'shadow-primary',
                                                             params.tag === 'work' && 'shadow-warning',
                                                             params.tag === 'social' && 'shadow-info',
                                                             params.tag === 'important' && 'shadow-danger')
-                                                        }`}
+                                                            }`}
                                                     >
                                                         {params.tag}
                                                     </button>
@@ -883,4 +711,4 @@ const ComponentsAppsNotes = () => {
     );
 };
 
-export default ComponentsAppsNotes;
+export default PropositionList;

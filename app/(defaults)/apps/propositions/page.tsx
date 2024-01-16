@@ -1,13 +1,13 @@
-import ComponentsAppsNotes from '@/components/apps/notes/components-apps-notes';
+import PropositionList from '@/components/apps/propositions';
 import { Metadata } from 'next';
 import React from 'react';
 
 export const metadata: Metadata = {
-    title: 'Notes',
+    title: 'Propositions',
 };
 
 const Notes = () => {
-    return <ComponentsAppsNotes />;
+    return <PropositionList />;
 };
 
 export default Notes;

@@ -1,10 +1,11 @@
 'use server'
 
-import { Author } from "./get-authors";
+import { generatedURL } from '@/components/utils/tools';
+import { Author } from '@/components/actions/get-authors';
 
 export type DeedFilters = {
     limit?: string;
-    isMostRecent?: string;
+    isMostRecent?: 'true';
     year?: string;
     date?: string;
     initialDate?: string;
@@ -33,12 +34,4 @@ export async function getDeeds(filters?: DeedFilters): Promise<Deed[]> {
     const res = await fetch(generatedURL('http://localhost:3000/deed', filters));
     if (!res.ok) throw new Error('Failed to fetch data')
     return res.json()
-}
-
-function generatedURL(baseUrl: string, filters?: DeedFilters) {
-    let path: string = '?';
-    if (!filters) return baseUrl;
-    const params = Object.entries(filters);
-    params.forEach(([key, value], i) => value && (path += `${i === 0 ? '' : '&'}${key}=${value}`));
-    return baseUrl + path;
 }

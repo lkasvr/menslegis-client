@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ReactSortable } from 'react-sortablejs';
 
 const items4 = [
@@ -27,6 +27,11 @@ interface DragndropGridProps {
 
 const DragndropGrid = ({ title, elements }: DragndropGridProps) => {
     const [gridDrag, setGridDrag] = useState(elements);
+
+    useEffect(() => {
+        setGridDrag(elements);
+    }, [elements]);
+
     return (
         <div className="dragndrop space-y-8">
             <div className="panel">
