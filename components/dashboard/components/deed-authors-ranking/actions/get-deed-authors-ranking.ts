@@ -16,8 +16,6 @@ export const getAuthorsRankingByDeed = async (filters?: AuthorWithDeedsFilters):
         ...filters,
     };
 
-    console.log(filters);
-
     let authors: AuthorWithDeeds[];
     try { authors = await getAuthorsWithDeeds(filters) } catch (error) {
         console.error('Error fetching deeds:', error);

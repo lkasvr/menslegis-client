@@ -62,16 +62,6 @@ const DeedResumeTable = ({ componentId, filters }: DeedResumeTableProps) => {
         fetchChartData();
     }, [filters]);
 
-    const saveDashboardComponent = useCallback(() => {
-        dispatch(
-            saveDashboardComponentsState({
-                id: componentId,
-                props: { filters: deedFilters }
-            })
-        );
-    }, [dispatch, componentId, deedFilters]);
-    useEffect(() => saveDashboardComponent(), [saveDashboardComponent]);
-
     const handleSelectAuthors = (options: MultiValue<{
         label: string;
         value: string;
@@ -85,12 +75,24 @@ const DeedResumeTable = ({ componentId, filters }: DeedResumeTableProps) => {
     }
 
     const handleUpdateDeedResumeTable = async () => {
+        dispatch(
+            saveDashboardComponentsState({
+                id: componentId,
+                props: { filters: { ...deedFilters, isMostRecent: 'true' } }
+            })
+        );
         const deeds = await getDeeds({ ...deedFilters, isMostRecent: 'true' });
         setDeeds(deeds);
         setShowModal(false);
     };
 
     const handleResetDeedResumeTable = async () => {
+        dispatch(
+            saveDashboardComponentsState({
+                id: componentId,
+                props: { filters: { isMostRecent: 'true' } }
+            })
+        );
         const deeds = await getDeeds({ isMostRecent: 'true' });
         setDeeds(deeds);
     }

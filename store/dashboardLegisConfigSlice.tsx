@@ -16,15 +16,11 @@ const dashboardLegisConfigSlice = createSlice({
     initialState: initialState,
     reducers: {
         saveDashboardComponentsState(state, { payload }: PayloadAction<{ id: string, props?: any }>) {
-            console.log('disparou save dashboard components state');
             const componentIndex = state.dashboard.components.findIndex(component => component.id === payload.id);
-            console.log('saveDashboardComponentsState', componentIndex !== -1);
             if (componentIndex !== -1)
                 state.dashboard.components[componentIndex].props = payload.props;
         },
         saveDashboardComponentsOnLocalStorage(state, { payload }: PayloadAction<DashboardComponent[]>) {
-            console.log(payload.length > 0)
-            console.log(payload);
             if (payload.length > 0)
                 localStorage.setItem(`${state.dashboard.name}-components`, JSON.stringify(payload));
         },

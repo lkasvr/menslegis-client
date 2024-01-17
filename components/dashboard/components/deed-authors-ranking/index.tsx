@@ -65,17 +65,13 @@ const DeedAuthorsRanking = ({ componentId, filters }: DeedAuthorsRankingProps) =
         fetchAuthorsRankingData();
     }, [filters]);
 
-    const saveDashboardComponent = useCallback(() => {
+    const handleUpdateRanking = async () => {
         dispatch(
             saveDashboardComponentsState({
                 id: componentId,
-                props: { filters: authorsFilters }
+                props: { filters: { ...authorsFilters } }
             })
         );
-    }, [dispatch, componentId, authorsFilters]);
-    useEffect(() => saveDashboardComponent(), [saveDashboardComponent]);
-
-    const handleUpdateRanking = async () => {
         const authorsWithDeeds = await getAuthorsRankingByDeed(authorsFilters);
         setAuthorsRankedWithDeeds(authorsWithDeeds.data);
         setPeriod(authorsWithDeeds.period);
@@ -83,6 +79,12 @@ const DeedAuthorsRanking = ({ componentId, filters }: DeedAuthorsRankingProps) =
     };
 
     const handleResetRanking = async () => {
+        if (!authorsFilters) return;
+        dispatch(
+            saveDashboardComponentsState({
+                id: componentId,
+            })
+        );
         const authorsWithDeeds = await getAuthorsRankingByDeed();
         setAuthorsRankedWithDeeds(authorsWithDeeds.data);
         setPeriod(authorsWithDeeds.period);

@@ -54,7 +54,6 @@ const PropositionsBarChart = ({ componentId, filters, authorsRangeInputValue = 3
     const [deedFilters, setDeedFilters] = useState<DeedFilters | undefined>(filters);
 
     useEffect(() => {
-        console.log(filters, authorsRangeInputValue);
         const fetchChartData = async () => {
             try {
                 const [authors, types, chartData] = await Promise.all([

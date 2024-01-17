@@ -30,10 +30,10 @@ const DashboardLegis = () => {
 
     const componentsMap = useMemo(() => {
         return {
-            DeedAuthorsRanking: ({ componentId }: { componentId: string }) => (<DeedAuthorsRanking componentId={componentId} />),
-            DeedReachCard: ({ componentId }: { componentId: string }) => (<DeedReachCard componentId={componentId} />),
-            DeedResumeTable: ({ componentId }: { componentId: string }) => (<DeedResumeTable componentId={componentId} />),
-            PropositionsBarChart: ({ componentId }: { componentId: string }) => (<PropositionsBarChart componentId={componentId} />),
+            DeedAuthorsRanking: (props: DashboardComponentProps) => (<DeedAuthorsRanking {...props} />),
+            DeedReachCard: (props: DashboardComponentProps) => (<DeedReachCard {...props} />),
+            DeedResumeTable: (props: DashboardComponentProps) => (<DeedResumeTable {...props} />),
+            PropositionsBarChart: (props: DashboardComponentProps) => (<PropositionsBarChart {...props} />),
         };
     }, []);
 
