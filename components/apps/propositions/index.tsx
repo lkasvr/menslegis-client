@@ -498,7 +498,7 @@ const PropositionList = () => {
                                                 </div>
                                                 <div>
                                                     <h4 className="mt-4 font-semibold">{deed.authors.map(a => (<span key={a.id}>{a.name}</span>))}</h4>
-                                                    <p className="mt-2 text-white-dark">{deed.description}</p>
+                                                    <p className="mt-2 text-white-dark">{deed.description?.slice(0, deed.description.indexOf(" ", 255))}...</p>
                                                 </div>
                                             </div>
                                             <div className="absolute bottom-5 left-0 w-full px-5">

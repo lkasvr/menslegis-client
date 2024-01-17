@@ -8,9 +8,9 @@ import DeedAuthorsRanking from './components/deed-authors-ranking';
 import DeedResumeTable from './components/deed-resume-table';
 import { useSelector, useDispatch } from 'react-redux';
 import { IRootState } from '@/store';
-import { deleteDashboardComponent, duplicateDashboardComponent } from '@/store/dashboardLegisConfigSlice';
-import { v4 as uuidv4 } from 'uuid';
+import { saveDashboardComponentsOnLocalStorage } from '@/store/dashboardLegisConfigSlice';
 import DeedReachCard from './components/deed-reach-card';
+import IconSave from '@/components/icon/icon-save';
 
 export type DashboardElement = {
     id: string;
@@ -18,9 +18,7 @@ export type DashboardElement = {
 };
 
 export type DashboardComponentProps = {
-    id: string;
-    duplicateComponent: (name: DashboardElementNames, props?: any) => void;
-    deleteComponent: (id: string) => void;
+    componentId: string;
     filters?: any;
 }
 
@@ -32,43 +30,37 @@ const DashboardLegis = () => {
 
     const componentsMap = useMemo(() => {
         return {
-            DeedAuthorsRanking: ({ id, duplicateComponent, deleteComponent }: DashboardComponentProps) => (
-                <DeedAuthorsRanking id={id} duplicateComponent={duplicateComponent} deleteComponent={deleteComponent} />
-            ),
-            DeedReachCard: ({ id, duplicateComponent, deleteComponent }: DashboardComponentProps) => (
-                <DeedReachCard id={id} duplicateComponent={duplicateComponent} deleteComponent={deleteComponent} />
-            ),
-            DeedResumeTable: ({ id, duplicateComponent, deleteComponent }: DashboardComponentProps) => (
-                <DeedResumeTable id={id} duplicateComponent={duplicateComponent} deleteComponent={deleteComponent} />
-            ),
-            PropositionsBarChart: ({ id, duplicateComponent, deleteComponent }: DashboardComponentProps) => (
-                <PropositionsBarChart id={id} duplicateComponent={duplicateComponent} deleteComponent={deleteComponent} />
-            ),
+            DeedAuthorsRanking: ({ componentId }: { componentId: string }) => (<DeedAuthorsRanking componentId={componentId} />),
+            DeedReachCard: ({ componentId }: { componentId: string }) => (<DeedReachCard componentId={componentId} />),
+            DeedResumeTable: ({ componentId }: { componentId: string }) => (<DeedResumeTable componentId={componentId} />),
+            PropositionsBarChart: ({ componentId }: { componentId: string }) => (<PropositionsBarChart componentId={componentId} />),
         };
     }, []);
 
     const createComponentByName = useCallback(
-        (componentName: DashboardElementNames, props: any) => React.createElement(componentsMap[componentName], props),
+        (componentName: DashboardElementNames, props: any) => React.createElement(componentsMap[componentName], { ...props }),
         [componentsMap]
     );
-
-    function duplicateComponent(name: DashboardElementNames, props?: any) {
-        dispatch(duplicateDashboardComponent({ id: uuidv4(), name, props }));
-    }
-
-    function deleteComponent(id: string) {
-        dispatch(deleteDashboardComponent({ id }))
-    }
 
     return (
         <React.Fragment>
             <BasicBreadcrumb pathName='Legis' />
             <div className='pt-5'>
                 <Banner title='Legis Panel' />
+                <div className="mb-3 ml-3 flex flex-row justify-start">
+                    <button
+                        type="button"
+                        className="btn btn-primary"
+                        onClick={() => dispatch(saveDashboardComponentsOnLocalStorage(components))}
+                    >
+                        <IconSave className="h-4 w-4 shrink-0 ltr:mr-1.5 rtl:ml-1.5" />
+                        Save dashboard
+                    </button>
+                </div>
                 <DragndropGrid elements={components.map(
                     ({ id, name, props }) => ({
                         id,
-                        content: createComponentByName(name, { id, duplicateComponent, deleteComponent, ...props })
+                        content: createComponentByName(name, { componentId: id, ...props })
                     })
                 )} />
             </div>

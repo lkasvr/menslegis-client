@@ -9,20 +9,24 @@ export type DashboardComponent = {
 
 export interface DashboardLegisConfig {
     dashboard: {
+        name: 'dashboard-legis',
+        maxComponents: number;
         components: DashboardComponent[];
     }
 }
 
 const dashboardLegisConfig: DashboardLegisConfig = {
     dashboard: {
+        name: 'dashboard-legis',
+        maxComponents: 10,
         components: [
             {
                 id: uuidv4(),
-                name: 'DeedReachCard'
+                name: 'DeedReachCard',
             },
             {
                 id: uuidv4(),
-                name: 'DeedReachCard'
+                name: 'DeedReachCard',
             },
             {
                 id: uuidv4(),
@@ -30,11 +34,12 @@ const dashboardLegisConfig: DashboardLegisConfig = {
             },
             {
                 id: uuidv4(),
-                name: 'PropositionsBarChart'
+                name: 'PropositionsBarChart',
             },
             {
                 id: uuidv4(),
-                name: 'DeedResumeTable'
+                name: 'DeedResumeTable',
+                props: ''
             },
         ]
     }

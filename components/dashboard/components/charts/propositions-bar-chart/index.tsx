@@ -1,8 +1,8 @@
 'use client'
 import { IRootState } from '@/store'
-import React, { Suspense, useEffect, useState } from 'react'
+import React, { Suspense, useCallback, useEffect, useState } from 'react'
 import ReactApexChart from 'react-apexcharts'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { DeedFilters } from '@/components/actions/get-deeds'
 import IconSettings from '@/components/icon/icon-settings';
 import IconXCircle from '@/components/icon/icon-x-circle';
@@ -21,14 +21,16 @@ import makeAnimated from 'react-select/animated';
 import DropdownMenu from '../../elements/dropdown-menu'
 import IconCopy from '@/components/icon/icon-copy'
 import { DashboardComponentProps, DashboardElementNames } from '@/components/dashboard/dashboard-legis'
+import { deleteDashboardComponent, duplicateDashboardComponent, saveDashboardComponentsState } from '@/store/dashboardLegisConfigSlice'
 
 interface PropositionBarChartProps extends DashboardComponentProps {
     filters?: DeedFilters;
     authorsRangeInputValue?: number;
 }
 
-const PropositionsBarChart = ({ id, duplicateComponent, deleteComponent, filters, authorsRangeInputValue = 3 }: PropositionBarChartProps) => {
+const PropositionsBarChart = ({ componentId, filters, authorsRangeInputValue = 3 }: PropositionBarChartProps) => {
     const componentName = PropositionsBarChart.name as DashboardElementNames;
+    const dispatch = useDispatch();
     const isDark = useSelector((state: IRootState) => state.themeConfig.theme === 'dark' || state.themeConfig.isDarkMode);
     const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl';
 
@@ -52,6 +54,7 @@ const PropositionsBarChart = ({ id, duplicateComponent, deleteComponent, filters
     const [deedFilters, setDeedFilters] = useState<DeedFilters | undefined>(filters);
 
     useEffect(() => {
+        console.log(filters, authorsRangeInputValue);
         const fetchChartData = async () => {
             try {
                 const [authors, types, chartData] = await Promise.all([
@@ -79,6 +82,12 @@ const PropositionsBarChart = ({ id, duplicateComponent, deleteComponent, filters
 
     const handleResetChart = async () => {
         if (!deedFilters) return;
+        dispatch(
+            saveDashboardComponentsState({
+                id: componentId,
+                props: { filters: { ...deedFilters }, authorsRangeInputValue: authorsQtyRange }
+            })
+        );
         setIsMounted(false);
         const chartData = await getChartData();
         setSeries(chartData?.series?.slice(0, authorsQtyRange))
@@ -88,6 +97,13 @@ const PropositionsBarChart = ({ id, duplicateComponent, deleteComponent, filters
 
     const handleUpdateChart = async () => {
         setIsMounted(false);
+        dispatch(
+            saveDashboardComponentsState({
+                id: componentId,
+                props: { filters: deedFilters, authorsRangeInputValue: authorsQtyRange }
+            })
+        );
+
         const params = Object.entries(deedFilters ?? {});
         const newFilters: Partial<DeedFilters> = params.reduce((acc, [key, value]) => (value ? { ...acc, [key]: value } : acc), {});
         const chartData = await getChartData(newFilters);
@@ -374,15 +390,15 @@ const PropositionsBarChart = ({ id, duplicateComponent, deleteComponent, filters
                                     {
                                         icon: <IconTrash className="h-4.5 w-4.5 shrink-0 ltr:mr-1 rtl:ml-1" />,
                                         text: 'Delete',
-                                        onClick: () => deleteComponent(id)
+                                        onClick: () => dispatch(deleteDashboardComponent({ id: componentId }))
                                     },
                                     {
                                         icon: <IconCopy className="h-4.5 w-4.5 shrink-0 ltr:mr-1 rtl:ml-1" />,
                                         text: 'Duplicate',
-                                        onClick: () => duplicateComponent(
-                                            componentName,
-                                            { filters: deedFilters, authorsRangeInputValue: authorsQtyRange }
-                                        )
+                                        onClick: () => dispatch(duplicateDashboardComponent({
+                                            name: componentName,
+                                            props: { filters: deedFilters, authorsRangeInputValue: authorsQtyRange }
+                                        }))
                                     },
                                     {
                                         icon: <IconXCircle className="h-4.5 w-4.5 shrink-0 ltr:mr-1 rtl:ml-1" />,

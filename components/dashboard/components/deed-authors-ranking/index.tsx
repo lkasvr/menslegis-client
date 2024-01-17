@@ -4,8 +4,8 @@ import IconSettings from '@/components/icon/icon-settings';
 import IconXCircle from '@/components/icon/icon-x-circle';
 import IconCopy from '@/components/icon/icon-copy';
 import { IRootState } from '@/store';
-import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import ConfigModal from '../elements/config-modal';
 import { getAuthorsRankingByDeed } from './actions/get-deed-authors-ranking';
 import { AuthorWithDeeds, AuthorWithDeedsFilters } from './actions/get-authors-with-deeds';
@@ -20,14 +20,17 @@ import { Subtype, getSubtypes } from '../actions/get-subtypes';
 import DropdownMenu from '../elements/dropdown-menu';
 import IconTrash from '@/components/icon/icon-trash';
 import { DashboardComponentProps, DashboardElementNames } from '../../dashboard-legis';
+import { deleteDashboardComponent, duplicateDashboardComponent, saveDashboardComponentsState } from '@/store/dashboardLegisConfigSlice';
 
-interface DeedAuhtorsRankingProps extends DashboardComponentProps {
+interface DeedAuthorsRankingProps extends DashboardComponentProps {
     filters?: AuthorWithDeedsFilters;
 }
 
-const DeedAuthorsRanking = ({ id, duplicateComponent, deleteComponent, filters }: DeedAuhtorsRankingProps) => {
+const DeedAuthorsRanking = ({ componentId, filters }: DeedAuthorsRankingProps) => {
     const componentName = DeedAuthorsRanking.name as DashboardElementNames;
+    const dispatch = useDispatch();
     const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl';
+
 
     const [showModal, setShowModal] = useState(false);
 
@@ -61,6 +64,16 @@ const DeedAuthorsRanking = ({ id, duplicateComponent, deleteComponent, filters }
         }
         fetchAuthorsRankingData();
     }, [filters]);
+
+    const saveDashboardComponent = useCallback(() => {
+        dispatch(
+            saveDashboardComponentsState({
+                id: componentId,
+                props: { filters: authorsFilters }
+            })
+        );
+    }, [dispatch, componentId, authorsFilters]);
+    useEffect(() => saveDashboardComponent(), [saveDashboardComponent]);
 
     const handleUpdateRanking = async () => {
         const authorsWithDeeds = await getAuthorsRankingByDeed(authorsFilters);
@@ -205,12 +218,12 @@ const DeedAuthorsRanking = ({ id, duplicateComponent, deleteComponent, filters }
                             {
                                 icon: <IconTrash className="h-4.5 w-4.5 shrink-0 ltr:mr-1 rtl:ml-1" />,
                                 text: 'Delete',
-                                onClick: () => deleteComponent(id)
+                                onClick: () => dispatch(deleteDashboardComponent({ id: componentId }))
                             },
                             {
                                 icon: <IconCopy className="h-4.5 w-4.5 shrink-0 ltr:mr-1 rtl:ml-1" />,
                                 text: 'Duplicate',
-                                onClick: () => duplicateComponent(componentName, { filters: authorsFilters })
+                                onClick: () => dispatch(duplicateDashboardComponent({ name: componentName, props: { filters: authorsFilters } }))
                             },
                             {
                                 icon: <IconXCircle className="h-4.5 w-4.5 shrink-0 ltr:mr-1 rtl:ml-1" />,

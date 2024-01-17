@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Author, getAuthors } from '@/components/actions/get-authors';
 import { Type, getTypes } from '../actions/get-types';
 import { Deed, DeedFilters, getDeeds } from '@/components/actions/get-deeds';
@@ -17,14 +17,16 @@ import Select, { MultiValue } from 'react-select';
 import makeAnimated from 'react-select/animated';
 import Tippy from '@tippyjs/react';
 import IconFile from '@/components/icon/icon-file';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { IRootState } from '@/store';
+import { deleteDashboardComponent, duplicateDashboardComponent, saveDashboardComponentsState } from '@/store/dashboardLegisConfigSlice';
 
 interface DeedResumeTableProps extends DashboardComponentProps {
     filters?: DeedFilters;
 }
 
-const DeedResumeTable = ({ id, duplicateComponent, deleteComponent, filters }: DeedResumeTableProps) => {
+const DeedResumeTable = ({ componentId, filters }: DeedResumeTableProps) => {
+    const dispatch = useDispatch();
     const isDark = useSelector((state: IRootState) => state.themeConfig.theme === 'dark' || state.themeConfig.isDarkMode);
 
     const componentName = DeedResumeTable.name as DashboardElementNames;
@@ -59,6 +61,16 @@ const DeedResumeTable = ({ id, duplicateComponent, deleteComponent, filters }: D
 
         fetchChartData();
     }, [filters]);
+
+    const saveDashboardComponent = useCallback(() => {
+        dispatch(
+            saveDashboardComponentsState({
+                id: componentId,
+                props: { filters: deedFilters }
+            })
+        );
+    }, [dispatch, componentId, deedFilters]);
+    useEffect(() => saveDashboardComponent(), [saveDashboardComponent]);
 
     const handleSelectAuthors = (options: MultiValue<{
         label: string;
@@ -165,12 +177,12 @@ const DeedResumeTable = ({ id, duplicateComponent, deleteComponent, filters }: D
                             {
                                 icon: <IconTrash className="h-4.5 w-4.5 shrink-0 ltr:mr-1 rtl:ml-1" />,
                                 text: 'Delete',
-                                onClick: () => deleteComponent(id)
+                                onClick: () => dispatch(deleteDashboardComponent({ id: componentId }))
                             },
                             {
                                 icon: <IconCopy className="h-4.5 w-4.5 shrink-0 ltr:mr-1 rtl:ml-1" />,
                                 text: 'Duplicate',
-                                onClick: () => duplicateComponent(componentName, { filters: deedFilters })
+                                onClick: () => dispatch(duplicateDashboardComponent({ name: componentName, props: { filters: deedFilters } }))
                             },
                             {
                                 icon: <IconXCircle className="h-4.5 w-4.5 shrink-0 ltr:mr-1 rtl:ml-1" />,

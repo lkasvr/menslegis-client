@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useEffect } from 'react';
 import Dropdown from '@/components/dropdown';
 import IconClock from '@/components/icon/icon-clock';
 import IconSquareCheck from '@/components/icon/icon-square-check';
@@ -8,11 +8,25 @@ import IconTrash from '@/components/icon/icon-trash';
 import IconCopy from '@/components/icon/icon-copy';
 import IconXCircle from '@/components/icon/icon-x-circle';
 import IconSettings from '@/components/icon/icon-settings';
+import { useDispatch } from 'react-redux';
+import { deleteDashboardComponent, duplicateDashboardComponent, saveDashboardComponentsState } from '@/store/dashboardLegisConfigSlice';
 
 interface DeedReachCardProps extends DashboardComponentProps { }
 
-const DeedReachCard = ({ id, duplicateComponent, deleteComponent }: DeedReachCardProps) => {
+const DeedReachCard = ({ componentId, filters }: DeedReachCardProps) => {
     const componentName = DeedReachCard.name as DashboardElementNames;
+    const dispatch = useDispatch();
+
+    const saveDashboardComponent = useCallback(() => {
+        dispatch(
+            saveDashboardComponentsState({
+                id: componentId,
+                props: { filters }
+            })
+        );
+    }, [dispatch, componentId, filters]);
+    useEffect(() => saveDashboardComponent(), [saveDashboardComponent]);
+
     return (
         <div className="flex flex-row flex-nowrap w-full">
             <div className="panel h-full">
@@ -34,12 +48,12 @@ const DeedReachCard = ({ id, duplicateComponent, deleteComponent }: DeedReachCar
                                     {
                                         icon: <IconTrash className="h-4.5 w-4.5 shrink-0 ltr:mr-1 rtl:ml-1" />,
                                         text: 'Delete',
-                                        onClick: () => deleteComponent(id)
+                                        onClick: () => dispatch(deleteDashboardComponent({ id: componentId }))
                                     },
                                     {
                                         icon: <IconCopy className="h-4.5 w-4.5 shrink-0 ltr:mr-1 rtl:ml-1" />,
                                         text: 'Duplicate',
-                                        onClick: () => duplicateComponent(componentName, {})
+                                        onClick: () => dispatch(duplicateDashboardComponent({ name: componentName, props: { filters } }))
                                     },
                                     {
                                         icon: <IconXCircle className="h-4.5 w-4.5 shrink-0 ltr:mr-1 rtl:ml-1" />,
@@ -94,12 +108,12 @@ const DeedReachCard = ({ id, duplicateComponent, deleteComponent }: DeedReachCar
                                     {
                                         icon: <IconTrash className="h-4.5 w-4.5 shrink-0 ltr:mr-1 rtl:ml-1" />,
                                         text: 'Delete',
-                                        onClick: () => deleteComponent(id)
+                                        onClick: () => dispatch(deleteDashboardComponent({ id: componentId }))
                                     },
                                     {
                                         icon: <IconCopy className="h-4.5 w-4.5 shrink-0 ltr:mr-1 rtl:ml-1" />,
                                         text: 'Duplicate',
-                                        onClick: () => duplicateComponent(componentName, {})
+                                        onClick: () => dispatch(duplicateDashboardComponent({ name: componentName, props: { filters } }))
                                     },
                                     {
                                         icon: <IconXCircle className="h-4.5 w-4.5 shrink-0 ltr:mr-1 rtl:ml-1" />,
