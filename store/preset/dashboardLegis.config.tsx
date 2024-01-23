@@ -7,8 +7,19 @@ export type DashboardComponent = {
     props?: any
 };
 
+export type DashboardAlerts = {
+    id: string;
+    type: 'success' | 'error' | 'warning' | 'info' | 'question',
+    color: 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info',
+    title: any,
+    text?: any,
+    duration?: number
+    status: 'display' | 'displayed';
+};
+
 export interface DashboardLegisConfig {
     dashboard: {
+        alerts: DashboardAlerts[];
         name: 'dashboard-legis',
         maxComponents: number;
         components: DashboardComponent[];
@@ -17,6 +28,7 @@ export interface DashboardLegisConfig {
 
 const dashboardLegisConfig: DashboardLegisConfig = {
     dashboard: {
+        alerts: [],
         name: 'dashboard-legis',
         maxComponents: 10,
         components: [

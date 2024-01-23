@@ -1,5 +1,5 @@
 {
-    "name": "vristo-next",
+    "name": "menslegis",
     "version": "0.1.0",
     "private": true,
     "scripts": {
@@ -31,11 +31,14 @@
         "easymde": "^2.18.0",
         "eslint": "8.32.0",
         "eslint-config-next": "13.1.2",
+        "firebase": "^10.7.1",
+        "firebase-admin": "^12.0.0",
         "formik": "^2.2.9",
         "highlight.js": "^11.7.0",
         "i18next": "^22.4.10",
         "mantine-datatable": "^1.7.35",
         "next": "14.0.4",
+        "next-auth": "^4.24.5",
         "ni18n": "^1.0.5",
         "react": "18.2.0",
         "react-animate-height": "^3.1.0",

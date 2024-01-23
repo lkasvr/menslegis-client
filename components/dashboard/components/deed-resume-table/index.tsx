@@ -25,7 +25,7 @@ interface DeedResumeTableProps extends DashboardComponentProps {
     filters?: DeedFilters;
 }
 
-const DeedResumeTable = ({ componentId, filters }: DeedResumeTableProps) => {
+const DeedResumeTable = ({ componentId, filters, triggerToast }: DeedResumeTableProps) => {
     const dispatch = useDispatch();
     const isDark = useSelector((state: IRootState) => state.themeConfig.theme === 'dark' || state.themeConfig.isDarkMode);
 
@@ -54,8 +54,8 @@ const DeedResumeTable = ({ componentId, filters }: DeedResumeTableProps) => {
                 setTypes(types);
                 setAuthors(authors);
             } catch (error) {
-                console.error('Erro ao buscar dados:', error);
-                // Lidar com o erro, se necessário
+                console.error(`ERROR: (${componentId} | ${componentName})`, error);
+                triggerToast({ type: 'error', color: 'danger', title: error, duration: 5000 })
             }
         };
 
@@ -179,7 +179,7 @@ const DeedResumeTable = ({ componentId, filters }: DeedResumeTableProps) => {
                             {
                                 icon: <IconTrash className="h-4.5 w-4.5 shrink-0 ltr:mr-1 rtl:ml-1" />,
                                 text: 'Delete',
-                                onClick: () => dispatch(deleteDashboardComponent({ id: componentId }))
+                                onClick: () => dispatch(deleteDashboardComponent({ id: componentId, name: componentName }))
                             },
                             {
                                 icon: <IconCopy className="h-4.5 w-4.5 shrink-0 ltr:mr-1 rtl:ml-1" />,
@@ -228,8 +228,8 @@ const DeedResumeTable = ({ componentId, filters }: DeedResumeTableProps) => {
                                 <td>
                                     <span
                                         className={`badge shadow-md
-                                        ${status === 'arquivado' && 'bg-orange-500 dark:group-hover:bg-orange-400/80'}
-                                        ${status === 'protocolado' && 'bg-slate-800 dark:group-hover:bg-slate-800/80'}
+                                        ${status === 'arquivado' && 'bg-slate-500 dark:group-hover:bg-slate-500/80'}
+                                        ${status === 'protocolado' && 'bg-primary-800 dark:group-hover:bg-primary-800/80'}
                                         `}
                                     >{status}</span>
                                 </td>

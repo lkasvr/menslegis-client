@@ -1,5 +1,5 @@
 'use client';
-import React, { JSXElementConstructor, ReactElement, useCallback, useMemo } from 'react';
+import React, { JSXElementConstructor, ReactElement, useCallback, useEffect, useMemo } from 'react';
 import BasicBreadcrumb from '../elements/Breadcrumbs/BasicBreadcrumb';
 import DragndropGrid from '../dragndrop/dragndrop-grid';
 import Banner from './components/Banner';
@@ -8,25 +8,55 @@ import DeedAuthorsRanking from './components/deed-authors-ranking';
 import DeedResumeTable from './components/deed-resume-table';
 import { useSelector, useDispatch } from 'react-redux';
 import { IRootState } from '@/store';
-import { saveDashboardComponentsOnLocalStorage } from '@/store/dashboardLegisConfigSlice';
+import { saveDashboardComponentsOnLocalStorage, setDisplayedDashboardAlert } from '@/store/dashboardLegisConfigSlice';
 import DeedReachCard from './components/deed-reach-card';
 import IconSave from '@/components/icon/icon-save';
+import Swal from 'sweetalert2';
 
 export type DashboardElement = {
     id: string;
     content: ReactElement<any, string | JSXElementConstructor<any>>;
 };
 
-export type DashboardComponentProps = {
+type toastParams = {
+    type: 'success' | 'error' | 'warning' | 'info' | 'question',
+    color: 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info',
+    title: any,
+    text?: any,
+    duration?: number
+};
+
+export interface DashboardComponentProps {
     componentId: string;
+    triggerToast: (params: toastParams) => void;
     filters?: any;
 }
 
 export type DashboardElementNames = 'DeedAuthorsRanking' | 'DeedReachCard' | 'DeedResumeTable' | 'PropositionsBarChart';
 
 const DashboardLegis = () => {
-    const { components } = useSelector((state: IRootState) => state.dashboardLegisConfig.dashboard);
     const dispatch = useDispatch();
+    const { components, alerts } = useSelector((state: IRootState) => state.dashboardLegisConfig.dashboard);
+
+    const triggerToast = ({ type, color, title, text, duration }: toastParams) => {
+        const toast = Swal.mixin({
+            toast: true,
+            position: 'top',
+            showConfirmButton: false,
+            timer: duration ?? 3000,
+            showCloseButton: true,
+            customClass: {
+                container: 'toast',
+                popup: `color-${color}`,
+            },
+        });
+        toast.fire({
+            icon: type,
+            title,
+            text,
+            padding: '10px 20px',
+        });
+    };
 
     const componentsMap = useMemo(() => {
         return {
@@ -42,6 +72,24 @@ const DashboardLegis = () => {
         [componentsMap]
     );
 
+    const showAlerts = () => {
+        alerts.forEach(alert => {
+            if (alert.status !== 'displayed') {
+                triggerToast(
+                    {
+                        type: alert.type,
+                        color: alert.color,
+                        title: alert.title,
+                        text: alert.text,
+                        duration: alert.duration
+                    }
+                );
+                dispatch(setDisplayedDashboardAlert({ id: alert.id }));
+            }
+        })
+    }
+    useEffect(() => showAlerts(), [alerts]);
+
     return (
         <React.Fragment>
             <BasicBreadcrumb pathName='Legis' />
@@ -51,18 +99,22 @@ const DashboardLegis = () => {
                     <button
                         type="button"
                         className="btn btn-primary"
-                        onClick={() => dispatch(saveDashboardComponentsOnLocalStorage(components))}
+                        onClick={() => {
+                            dispatch(saveDashboardComponentsOnLocalStorage(components));
+                            triggerToast({ type: 'success', color: 'success', title: 'Dashboard saved successfully' })
+                        }}
                     >
                         <IconSave className="h-4 w-4 shrink-0 ltr:mr-1.5 rtl:ml-1.5" />
                         Save dashboard
                     </button>
                 </div>
-                <DragndropGrid elements={components.map(
-                    ({ id, name, props }) => ({
-                        id,
-                        content: createComponentByName(name, { componentId: id, ...props })
-                    })
-                )} />
+                <DragndropGrid
+                    elements={components.map(
+                        ({ id, name, props }) => ({
+                            id,
+                            content: createComponentByName(name, { componentId: id, triggerToast, ...props })
+                        })
+                    )} />
             </div>
         </React.Fragment>
     )

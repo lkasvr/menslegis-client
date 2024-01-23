@@ -7,7 +7,7 @@ export type Type = {
 }
 
 export async function getTypes(): Promise<Type[]> {
-    const res = await fetch('http://localhost:3000/deed-type')
+    const res = await fetch(`${process.env.MENSLEGIS_API_URL}/deed-type`)
     if (!res.ok) throw new Error('Failed to fetch data')
     return res.json()
 }

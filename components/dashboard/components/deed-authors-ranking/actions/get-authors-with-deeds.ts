@@ -1,6 +1,6 @@
 'use server'
 import { cache } from 'react'
-import { Deed } from '../../actions/get-deeds';
+import { Deed } from '@/components/actions/get-deeds';
 import { generatedURL } from '../../../../utils/tools';
 
 export type AuthorWithDeedsFilters = {
@@ -31,7 +31,7 @@ export const preload = () => {
 }
 
 export const getAuthorsWithDeeds = cache(async (filters: AuthorWithDeedsFilters): Promise<AuthorWithDeeds[]> => {
-    const res = await fetch(generatedURL('http://localhost:3000/author', { ...filters, withDeeds: 'true' }))
+    const res = await fetch(generatedURL(`${process.env.MENSLEGIS_API_URL}/author`, { ...filters, withDeeds: 'true' }))
     if (!res.ok) throw new Error('Failed to fetch data')
     return res.json()
-})
+});

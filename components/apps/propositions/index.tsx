@@ -6,10 +6,8 @@ import IconHorizontalDots from '@/components/icon/icon-horizontal-dots';
 import IconMenu from '@/components/icon/icon-menu';
 import IconNotes from '@/components/icon/icon-notes';
 import IconNotesEdit from '@/components/icon/icon-notes-edit';
-import IconPencil from '@/components/icon/icon-pencil';
 import IconSquareRotated from '@/components/icon/icon-square-rotated';
 import IconStar from '@/components/icon/icon-star';
-import IconTrashLines from '@/components/icon/icon-trash-lines';
 import IconFile from '@/components/icon/icon-txt-file';
 import IconX from '@/components/icon/icon-x';
 import { IRootState } from '@/store';
@@ -18,299 +16,67 @@ import React, { Fragment, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
 import { Deed, getDeeds } from '@/components/actions/get-deeds';
+import { format } from 'date-fns';
+
+interface IDeed extends Deed {
+    isFav?: boolean;
+}
 
 const PropositionList = () => {
-    const [notesList, setNoteList] = useState([
-        {
-            id: 1,
-            user: 'Max Smith',
-            thumb: 'profile-16.jpeg',
-            title: 'Meeting with Kelly',
-            description: 'Curabitur facilisis vel elit sed dapibus sodales purus rhoncus.',
-            date: '11/01/2020',
-            isFav: false,
-            tag: 'personal',
-        },
-        {
-            id: 2,
-            user: 'John Doe',
-            thumb: 'profile-14.jpeg',
-            title: 'Receive Package',
-            description: 'Facilisis curabitur facilisis vel elit sed dapibus sodales purus.',
-            date: '11/02/2020',
-            isFav: true,
-            tag: '',
-        },
-        {
-            id: 3,
-            user: 'Kia Jain',
-            thumb: 'profile-15.jpeg',
-            title: 'Download Docs',
-            description: 'Proin a dui malesuada, laoreet mi vel, imperdiet diam quam laoreet.',
-            date: '11/04/2020',
-            isFav: false,
-            tag: 'work',
-        },
-        {
-            id: 4,
-            user: 'Max Smith',
-            thumb: 'profile-16.jpeg',
-            title: 'Meeting at 4:50pm',
-            description: 'Excepteur sint occaecat cupidatat non proident, anim id est laborum.',
-            date: '11/08/2020',
-            isFav: false,
-            tag: '',
-        },
-        {
-            id: 5,
-            user: 'Karena Courtliff',
-            thumb: 'profile-17.jpeg',
-            title: 'Backup Files EOD',
-            description: 'Maecenas condimentum neque mollis, egestas leo ut, gravida.',
-            date: '11/09/2020',
-            isFav: false,
-            tag: '',
-        },
-        {
-            id: 6,
-            user: 'Max Smith',
-            thumb: 'profile-16.jpeg',
-            title: 'Download Server Logs',
-            description: 'Suspendisse efficitur diam quis gravida. Nunc molestie est eros.',
-            date: '11/09/2020',
-            isFav: false,
-            tag: 'social',
-        },
-        {
-            id: 7,
-            user: 'Vladamir Koschek',
-            thumb: '',
-            title: 'Team meet at Starbucks',
-            description: 'Etiam a odio eget enim aliquet laoreet lobortis sed ornare nibh.',
-            date: '11/10/2020',
-            isFav: false,
-            tag: '',
-        },
-        {
-            id: 8,
-            user: 'Max Smith',
-            thumb: 'profile-16.jpeg',
-            title: 'Create new users Profile',
-            description: 'Duis aute irure in nulla pariatur. Etiam a odio eget enim aliquet.',
-            date: '11/11/2020',
-            isFav: false,
-            tag: 'important',
-        },
-        {
-            id: 9,
-            user: 'Robert Garcia',
-            thumb: 'profile-21.jpeg',
-            title: 'Create a compost pile',
-            description: 'Zombie ipsum reversus ab viral inferno, nam rick grimes malum cerebro.',
-            date: '11/12/2020',
-            isFav: true,
-            tag: '',
-        },
-        {
-            id: 10,
-            user: 'Marie Hamilton',
-            thumb: 'profile-2.jpeg',
-            title: 'Take a hike at a local park',
-            description: 'De carne lumbering animata corpora quaeritis. Summus brains sit',
-            date: '11/13/2020',
-            isFav: true,
-            tag: '',
-        },
-        {
-            id: 11,
-            user: 'Megan Meyers',
-            thumb: 'profile-1.jpeg',
-            title: 'Take a class at local community center that interests you',
-            description: 'Cupcake ipsum dolor. Sit amet marshmallow topping cheesecake muffin.',
-            date: '11/13/2020',
-            isFav: false,
-            tag: '',
-        },
-        {
-            id: 12,
-            user: 'Angela Hull',
-            thumb: 'profile-22.jpeg',
-            title: 'Research a topic interested in',
-            description: 'Lemon drops tootsie roll marshmallow halvah carrot cake.',
-            date: '11/14/2020',
-            isFav: false,
-            tag: '',
-        },
-        {
-            id: 13,
-            user: 'Karen Wolf',
-            thumb: 'profile-23.jpeg',
-            title: 'Plan a trip to another country',
-            description: 'Space, the final frontier. These are the voyages of the Starship Enterprise.',
-            date: '11/16/2020',
-            isFav: true,
-            tag: '',
-        },
-        {
-            id: 14,
-            user: 'Jasmine Barnes',
-            thumb: 'profile-1.jpeg',
-            title: 'Improve touch typing',
-            description: 'Well, the way they make shows is, they make one show.',
-            date: '11/16/2020',
-            isFav: false,
-            tag: '',
-        },
-        {
-            id: 15,
-            user: 'Thomas Cox',
-            thumb: 'profile-11.jpeg',
-            title: 'Learn Express.js',
-            description: 'Bulbasaur Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-            date: '11/17/2020',
-            isFav: false,
-            tag: 'work',
-        },
-        {
-            id: 16,
-            user: 'Marcus Jones',
-            thumb: 'profile-12.jpeg',
-            title: 'Learn calligraphy',
-            description: 'Ivysaur Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-            date: '11/17/2020',
-            isFav: false,
-            tag: '',
-        },
-        {
-            id: 17,
-            user: 'Matthew Gray',
-            thumb: 'profile-24.jpeg',
-            title: 'Have a photo session with some friends',
-            description: 'Venusaur Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-            date: '11/18/2020',
-            isFav: false,
-            tag: 'important',
-        },
-        {
-            id: 18,
-            user: 'Chad Davis',
-            thumb: 'profile-31.jpeg',
-            title: 'Go to the gym',
-            description: 'Charmander Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-            date: '11/18/2020',
-            isFav: false,
-            tag: '',
-        },
-        {
-            id: 19,
-            user: 'Linda Drake',
-            thumb: 'profile-23.jpeg',
-            title: 'Make own LEGO creation',
-            description: 'Charmeleon Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-            date: '11/18/2020',
-            isFav: false,
-            tag: 'social',
-        },
-        {
-            id: 20,
-            user: 'Kathleen Flores',
-            thumb: 'profile-34.jpeg',
-            title: 'Take cat on a walk',
-            description: 'Baseball ipsum dolor sit amet cellar rubber win hack tossed. ',
-            date: '11/18/2020',
-            isFav: false,
-            tag: 'personal',
-        },
-    ]);
-
     const defaultParams = {
         id: null,
-        title: '',
         description: '',
-        tag: '',
-        user: '',
-        thumb: '',
+        status: ''
     };
-    const [params, setParams] = useState<any>(JSON.parse(JSON.stringify(defaultParams)));
-    const [addContactModal, setAddContactModal] = useState<any>(false);
-    const [isDeleteNoteModal, setIsDeleteNoteModal] = useState<any>(false);
-    const [isShowNoteMenu, setIsShowNoteMenu] = useState<any>(false);
-    const [isViewNoteModal, setIsViewNoteModal] = useState<any>(false);
-    const [filterdNotesList, setFilterdNotesList] = useState<any>([]);
+    const [params, setParams] = useState<IDeed>(JSON.parse(JSON.stringify(defaultParams)));
+    const [isShowDeedMenu, setIsShowDeedMenu] = useState<any>(false);
+    const [isViewDeedModal, setIsViewDeedModal] = useState<any>(false);
+
+    const [deeds, setDeeds] = useState<IDeed[]>([]);
+    const [filteredDeedsList, setFilteredDeedsList] = useState<IDeed[]>([]);
+    const [statusList, setStatusList] = useState<string[]>([]);
     const [selectedTab, setSelectedTab] = useState<any>('all');
-    const [deletedNote, setDeletedNote] = useState<any>(null);
 
-    const [filteredDeedsList, setFilteredDeedsList] = useState<Deed[]>([]);
-
-    const searchNotes = () => {
+    const searchDeeds = () => {
         if (selectedTab !== 'fav') {
-            if (selectedTab !== 'all' || selectedTab === 'delete') {
-                setFilterdNotesList(notesList.filter((d) => d.tag === selectedTab));
+            if (selectedTab !== 'all') {
+                setFilteredDeedsList(deeds.filter((d) => d.status === selectedTab));
             } else {
-                setFilterdNotesList(notesList);
+                setFilteredDeedsList(deeds);
             }
         } else {
-            setFilterdNotesList(notesList.filter((d) => d.isFav));
+            setFilteredDeedsList(deeds.filter((d) => d.isFav));
         }
     };
 
     const tabChanged = (type: string) => {
         setSelectedTab(type);
-        setIsShowNoteMenu(false);
-        searchNotes();
+        setIsShowDeedMenu(false);
+        searchDeeds();
     };
 
-    const setFav = (note: any) => {
-        let list = filterdNotesList;
-        let item = list.find((d: any) => d.id === note.id);
-        item.isFav = !item.isFav;
+    const setFav = (deed: IDeed) => {
+        let list = filteredDeedsList;
+        let item = list.find((d) => d.id === deed.id);
+        if (item) item.isFav = !item.isFav;
 
-        setFilterdNotesList([...list]);
-        if (selectedTab !== 'all' || selectedTab === 'delete') {
-            searchNotes();
-        }
+        setFilteredDeedsList([...list]);
+        if (selectedTab !== 'all') searchDeeds();
+        showMessage('This is a on developement feature, just does not work as expected', 'warning', 5000)
     };
 
-    const setTag = (note: any, name: string = '') => {
-        let list = filterdNotesList;
-        let item = filterdNotesList.find((d: any) => d.id === note.id);
-        item.tag = name;
-        setFilterdNotesList([...list]);
-        if (selectedTab !== 'all' || selectedTab === 'delete') {
-            searchNotes();
-        }
+    const viewDeed = (deed: IDeed) => {
+        setParams(deed);
+        setIsViewDeedModal(true);
     };
 
-    const viewNote = (note: any) => {
-        setParams(note);
-        setIsViewNoteModal(true);
-    };
-
-    const editNote = (note: any = null) => {
-        setIsShowNoteMenu(false);
-        const json = JSON.parse(JSON.stringify(defaultParams));
-        setParams(json);
-        if (note) {
-            let json1 = JSON.parse(JSON.stringify(note));
-            setParams(json1);
-        }
-        setAddContactModal(true);
-    };
-
-    const deleteNote = () => {
-        setNoteList(notesList.filter((d: any) => d.id !== deletedNote.id));
-        searchNotes();
-        showMessage('Note has been deleted successfully.');
-        setIsDeleteNoteModal(false);
-    };
-
-    const showMessage = (msg = '', type = 'success') => {
+    const showMessage = (msg = '', type = 'success', duration = 3000) => {
         const toast: any = Swal.mixin({
             toast: true,
             position: 'top',
             showConfirmButton: false,
-            timer: 3000,
-            customClass: { container: 'toast' },
+            timer: duration,
+            customClass: { container: 'toast', popup: `color-${type}`, },
         });
         toast.fire({
             icon: type,
@@ -320,17 +86,18 @@ const PropositionList = () => {
     };
 
     useEffect(() => {
-        searchNotes();
-    }, [selectedTab, notesList]);
+        searchDeeds();
+    }, [deeds, selectedTab]);
 
     useEffect(() => {
         async function fetchDeeds() {
             const deeds = await getDeeds({ isMostRecent: 'true' });
-            setFilteredDeedsList(deeds);
+            setDeeds(deeds.map(d => ({ ...d, isFav: false })));
+            const statusList = deeds.filter(deed => deed.status).map(deed => deed.status!);
+            setStatusList([...new Set(statusList)]);
         }
-
         fetchDeeds();
-    }, [selectedTab, notesList]);
+    }, []);
 
     const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl';
 
@@ -338,8 +105,8 @@ const PropositionList = () => {
         <div>
             <div className="relative flex h-full gap-5 sm:h-[calc(100vh_-_150px)]">
                 <div
-                    className={`absolute z-10 hidden h-full w-full rounded-md bg-black/60 ${isShowNoteMenu ? '!block xl:!hidden' : ''}`}
-                    onClick={() => setIsShowNoteMenu(!isShowNoteMenu)}>
+                    className={`absolute z-10 hidden h-full w-full rounded-md bg-black/60 ${isShowDeedMenu ? '!block xl:!hidden' : ''}`}
+                    onClick={() => setIsShowDeedMenu(!isShowDeedMenu)}>
                 </div>
                 <div
                     className={`panel
@@ -356,7 +123,7 @@ const PropositionList = () => {
                     rtl:rounded-l-none
                     ltr:lg:rounded-r-md rtl:lg:rounded-l-md
                     xl:relative xl:block
-                    xl:h-auto ${isShowNoteMenu ? '!block h-full ltr:left-0 rtl:right-0' : 'hidden shadow'}`}
+                    xl:h-auto ${isShowDeedMenu ? '!block h-full ltr:left-0 rtl:right-0' : 'hidden shadow'}`}
                 >
                     <div className="flex h-full flex-col pb-16">
                         <div className="flex items-center text-center">
@@ -392,43 +159,27 @@ const PropositionList = () => {
                                     </div>
                                 </button>
                                 <div className="h-px w-full border-b border-white-light dark:border-[#1b2e4b]"></div>
-                                <div className="px-1 py-3 text-white-dark">Tags</div>
-                                <button
-                                    type="button"
-                                    className={`flex h-10 w-full items-center rounded-md p-1 font-medium text-primary duration-300 hover:bg-white-dark/10 ltr:hover:pl-3 rtl:hover:pr-3 dark:hover:bg-[#181F32] ${selectedTab === 'personal' && 'bg-gray-100 ltr:pl-3 rtl:pr-3 dark:bg-[#181F32]'
-                                        }`}
-                                    onClick={() => tabChanged('personal')}
-                                >
-                                    <IconSquareRotated className="shrink-0 fill-primary" />
-                                    <div className="ltr:ml-3 rtl:mr-3">Personal</div>
-                                </button>
-                                <button
-                                    type="button"
-                                    className={`flex h-10 w-full items-center rounded-md p-1 font-medium text-warning duration-300 hover:bg-white-dark/10 ltr:hover:pl-3 rtl:hover:pr-3 dark:hover:bg-[#181F32] ${selectedTab === 'work' && 'bg-gray-100 ltr:pl-3 rtl:pr-3 dark:bg-[#181F32]'
-                                        }`}
-                                    onClick={() => tabChanged('work')}
-                                >
-                                    <IconSquareRotated className="shrink-0 fill-warning" />
-                                    <div className="ltr:ml-3 rtl:mr-3">Work</div>
-                                </button>
-                                <button
-                                    type="button"
-                                    className={`flex h-10 w-full items-center rounded-md p-1 font-medium text-info duration-300 hover:bg-white-dark/10 ltr:hover:pl-3 rtl:hover:pr-3 dark:hover:bg-[#181F32] ${selectedTab === 'social' && 'bg-gray-100 ltr:pl-3 rtl:pr-3 dark:bg-[#181F32]'
-                                        }`}
-                                    onClick={() => tabChanged('social')}
-                                >
-                                    <IconSquareRotated className="shrink-0 fill-info" />
-                                    <div className="ltr:ml-3 rtl:mr-3">Social</div>
-                                </button>
-                                <button
-                                    type="button"
-                                    className={`flex h-10 w-full items-center rounded-md p-1 font-medium text-danger duration-300 hover:bg-white-dark/10 ltr:hover:pl-3 rtl:hover:pr-3 dark:hover:bg-[#181F32] ${selectedTab === 'important' && 'bg-gray-100 ltr:pl-3 rtl:pr-3 dark:bg-[#181F32]'
-                                        }`}
-                                    onClick={() => tabChanged('important')}
-                                >
-                                    <IconSquareRotated className="shrink-0 fill-danger" />
-                                    <div className="ltr:ml-3 rtl:mr-3">Important</div>
-                                </button>
+                                {/* STATUS LIST */}
+                                <div className="px-1 py-3 text-white-dark">Status</div>
+                                {statusList.map(status => {
+                                    const fillColor =
+                                        status === 'arquivado' ? 'fill-slate-500' : status === 'protocolado' ? 'fill-primary' : 'fill-secondary';
+                                    const textColor =
+                                        status === 'arquivado' ? 'text-slate-500' : status === 'protocolado' ? 'text-primary' : 'text-secondary';
+                                    return (
+                                        <button
+                                            key={status}
+                                            type="button"
+                                            className={`flex h-10 w-full items-center rounded-md p-1 font-medium ${textColor} duration-300 hover:bg-white-dark/10 ltr:hover:pl-3 rtl:hover:pr-3 dark:hover:bg-[#181F32] ${selectedTab === status && 'bg-gray-100 ltr:pl-3 rtl:pr-3 dark:bg-[#181F32]'
+                                                }`}
+                                            onClick={() => tabChanged(status)}
+                                        >
+                                            <IconSquareRotated className={`shrink-0 ${fillColor}`}
+                                            />
+                                            <div className="ltr:ml-3 rtl:mr-3">{status}</div>
+                                        </button>
+                                    )
+                                })}
                             </div>
                         </PerfectScrollbar>
                     </div>
@@ -436,153 +187,87 @@ const PropositionList = () => {
 
                 <div className="panel h-full flex-1 overflow-auto">
                     <div className="pb-5">
-                        <button type="button" className="hover:text-primary xl:hidden" onClick={() => setIsShowNoteMenu(!isShowNoteMenu)}>
+                        <button type="button" className="hover:text-primary xl:hidden" onClick={() => setIsShowDeedMenu(!isShowDeedMenu)}>
                             <IconMenu />
                         </button>
                     </div>
                     {filteredDeedsList.length ? (
                         <div className="min-h-[400px] sm:min-h-[300px]">
                             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
-                                {filteredDeedsList.map((deed) => {
-                                    return (
-                                        <div
-                                            className={`panel pb-12 ${deed.status === 'personal'
-                                                ? 'bg-primary-light shadow-primary'
-                                                : deed.status === 'work'
-                                                    ? 'bg-warning-light shadow-warning'
-                                                    : deed.status === 'social'
-                                                        ? 'bg-info-light shadow-info'
-                                                        : deed.status === 'important'
-                                                            ? 'bg-danger-light shadow-danger'
-                                                            : 'dark:shadow-dark'
-                                                }`}
-                                            key={deed.id}
-                                        >
-                                            <div className="min-h-[142px]">
-                                                <div className="flex justify-between">
-                                                    <div className="flex w-max items-center">
-                                                        <div className="flex-none">
-                                                            <IconFile className={`h-8 w-8 ${deed.status === 'personal'
-                                                                ? 'text-primary'
-                                                                : deed.status === 'work'
-                                                                    ? 'text-warning'
-                                                                    : deed.status === 'social'
-                                                                        ? 'text-info'
-                                                                        : deed.status === 'important'
-                                                                            ? 'text-danger'
-                                                                            : 'dark:shadow-dark'
-                                                                }`} />
-                                                        </div>
-                                                        <div className="ltr:ml-2 rtl:mr-2">
-                                                            <div className="font-semibold">{deed.name}</div>
-                                                            <div className="text-sx text-white-dark">{deed.docDate}</div>
-                                                        </div>
+                                {filteredDeedsList.map((deed) => (
+                                    <div
+                                        className={`panel pb-12 ${deed.status === 'protocolado'
+                                            ? 'bg-primary-light shadow-primary'
+                                            : deed.status === 'arquivado'
+                                                ? 'bg-warning-light shadow-slate-500'
+                                                : deed.status === 'important'
+                                                    ? 'bg-danger-light shadow-danger'
+                                                    : 'dark:shadow-dark'
+                                            }`}
+                                        key={deed.id}
+                                    >
+                                        <div className="min-h-[142px]">
+                                            <div className="flex justify-between">
+                                                <div className="flex w-max items-center">
+                                                    <div className="flex-none">
+                                                        <IconFile className={`h-8 w-8 ${deed.status === 'protocolado'
+                                                            ? 'text-primary'
+                                                            : deed.status === 'arquivado'
+                                                                ? 'text-slate-500'
+                                                                : deed.status === 'important'
+                                                                    ? 'text-danger'
+                                                                    : 'dark:shadow-dark'
+                                                            }`} />
                                                     </div>
-                                                    <div className="dropdown">
-                                                        <Dropdown
-                                                            offset={[0, 5]}
-                                                            placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
-                                                            btnClassName="text-primary"
-                                                            button={<IconHorizontalDots className="rotate-90 opacity-70 hover:opacity-100" />}
-                                                        >
-                                                            <ul className="text-sm font-medium">
-                                                                <li>
-                                                                    <button type="button" onClick={() => viewNote(deed)}>
-                                                                        <IconEye className="h-4.5 w-4.5 shrink-0 ltr:mr-3 rtl:ml-3" />
-                                                                        View
-                                                                    </button>
-                                                                </li>
-                                                            </ul>
-                                                        </Dropdown>
+                                                    <div className="ltr:ml-2 rtl:mr-2">
+                                                        <div className="font-bold">{deed.name}</div>
+                                                        <div className="text-sx text-white-dark">{format(new Date(deed.docDate), 'dd/MM/yyyy')}</div>
                                                     </div>
                                                 </div>
-                                                <div>
-                                                    <h4 className="mt-4 font-semibold">{deed.authors.map(a => (<span key={a.id}>{a.name}</span>))}</h4>
-                                                    <p className="mt-2 text-white-dark">{deed.description?.slice(0, deed.description.indexOf(" ", 255))}...</p>
+                                                {/* MENU DROP DOWN */}
+                                                <div className="dropdown">
+                                                    <Dropdown
+                                                        offset={[0, 5]}
+                                                        placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
+                                                        btnClassName="text-primary"
+                                                        button={<IconHorizontalDots className="rotate-90 opacity-70 hover:opacity-100" />}
+                                                    >
+                                                        <ul className="text-sm font-medium">
+                                                            <li>
+                                                                <button type="button" onClick={() => viewDeed(deed)}>
+                                                                    <IconEye className="h-4.5 w-4.5 shrink-0 ltr:mr-3 rtl:ml-3" />
+                                                                    View
+                                                                </button>
+                                                            </li>
+                                                        </ul>
+                                                    </Dropdown>
                                                 </div>
                                             </div>
-                                            <div className="absolute bottom-5 left-0 w-full px-5">
-                                                <div className="mt-2 flex items-center justify-between">
-                                                    <div className="dropdown">
-                                                        <div className="dropdown">
-                                                            <Dropdown
-                                                                offset={[0, 5]}
-                                                                placement={`${isRtl ? 'bottom-end' : 'bottom-start'}`}
-                                                                btnClassName={`${deed.status === 'personal'
-                                                                    ? 'text-primary'
-                                                                    : deed.status === 'work'
-                                                                        ? 'text-warning'
-                                                                        : deed.status === 'social'
-                                                                            ? 'text-info'
-                                                                            : deed.status === 'important'
-                                                                                ? 'text-danger'
-                                                                                : ''
-                                                                    }`}
-                                                                button={
-                                                                    <span>
-                                                                        <IconSquareRotated
-                                                                            className={
-                                                                                deed.status === 'personal'
-                                                                                    ? 'fill-primary'
-                                                                                    : deed.status === 'work'
-                                                                                        ? 'fill-warning'
-                                                                                        : deed.status === 'social'
-                                                                                            ? 'fill-info'
-                                                                                            : deed.status === 'important'
-                                                                                                ? 'fill-danger'
-                                                                                                : ''
-                                                                            }
-                                                                        />
-                                                                    </span>
-                                                                }
-                                                            >
-                                                                <ul className="text-sm font-medium">
-                                                                    <li>
-                                                                        <button type="button" onClick={() => setTag(deed, 'personal')}>
-                                                                            <IconSquareRotated className="fill-primary text-primary ltr:mr-2 rtl:ml-2" />
-                                                                            Personal
-                                                                        </button>
-                                                                    </li>
-                                                                    <li>
-                                                                        <button type="button" onClick={() => setTag(deed, 'work')}>
-                                                                            <IconSquareRotated className="fill-warning text-warning ltr:mr-2 rtl:ml-2" />
-                                                                            Work
-                                                                        </button>
-                                                                    </li>
-                                                                    <li>
-                                                                        <button type="button" onClick={() => setTag(deed, 'social')}>
-                                                                            <IconSquareRotated className="fill-info text-info ltr:mr-2 rtl:ml-2" />
-                                                                            Social
-                                                                        </button>
-                                                                    </li>
-                                                                    <li>
-                                                                        <button type="button" onClick={() => setTag(deed, 'important')}>
-                                                                            <IconSquareRotated className="fill-danger text-danger ltr:mr-2 rtl:ml-2" />
-                                                                            Important
-                                                                        </button>
-                                                                    </li>
-                                                                </ul>
-                                                            </Dropdown>
-                                                        </div>
-                                                    </div>
-                                                    <div className="flex items-center">
-                                                        <button type="button" className="group text-warning ltr:ml-2 rtl:mr-2" onClick={() => setFav(deed)}>
-                                                            <IconStar className={`h-4.5 w-4.5 group-hover:fill-warning ${deed.status && 'fill-warning'}`} />
-                                                        </button>
-                                                    </div>
+                                            <div>
+                                                <h4 className="mt-4 font-semibold">{deed.authors.map(a => (<span key={a.id}>{a.name}</span>))}</h4>
+                                                <p className="mt-2 text-white-dark">{deed.description?.slice(0, deed.description.indexOf(" ", 255))}...</p>
+                                            </div>
+                                        </div>
+                                        <div className="absolute bottom-5 left-0 w-full px-5">
+                                            <div className="mt-2 flex items-center justify-end">
+                                                <div className="flex items-center">
+                                                    <button type="button" className="group text-warning ltr:ml-2 rtl:mr-2" onClick={() => setFav(deed)}>
+                                                        <IconStar className={`h-4.5 w-4.5 group-hover:fill-warning ${deed.isFav && 'fill-warning'}`} />
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
-                                    );
-                                })}
+                                    </div>
+                                )
+                                )}
                             </div>
                         </div>
                     ) : (
                         <div className="flex h-full min-h-[400px] items-center justify-center text-lg font-semibold sm:min-h-[300px]">No data available</div>
                     )}
 
-                    <Transition appear show={isDeleteNoteModal} as={Fragment}>
-                        <Dialog as="div" open={isDeleteNoteModal} onClose={() => setIsDeleteNoteModal(false)} className="relative z-50">
+                    <Transition appear show={isViewDeedModal} as={Fragment}>
+                        <Dialog as="div" open={isViewDeedModal} onClose={() => setIsViewDeedModal(false)} className="relative z-50">
                             <Transition.Child
                                 as={Fragment}
                                 enter="ease-out duration-300"
@@ -609,79 +294,24 @@ const PropositionList = () => {
                                         <Dialog.Panel className="panel w-full max-w-lg overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark">
                                             <button
                                                 type="button"
-                                                onClick={() => setIsDeleteNoteModal(false)}
-                                                className="absolute top-4 text-gray-400 outline-none hover:text-gray-800 ltr:right-4 rtl:left-4 dark:hover:text-gray-600"
-                                            >
-                                                <IconX />
-                                            </button>
-                                            <div className="bg-[#fbfbfb] py-3 text-lg font-medium ltr:pl-5 ltr:pr-[50px] rtl:pl-[50px] rtl:pr-5 dark:bg-[#121c2c]">Delete Notes</div>
-                                            <div className="p-5 text-center">
-                                                <div className="mx-auto w-fit rounded-full bg-danger p-4 text-white ring-4 ring-danger/30">
-                                                    <IconTrashLines className="mx-auto h-7 w-7" />
-                                                </div>
-                                                <div className="mx-auto mt-5 sm:w-3/4">Are you sure you want to delete Notes?</div>
-
-                                                <div className="mt-8 flex items-center justify-center">
-                                                    <button type="button" className="btn btn-outline-danger" onClick={() => setIsDeleteNoteModal(false)}>
-                                                        Cancel
-                                                    </button>
-                                                    <button type="button" className="btn btn-primary ltr:ml-4 rtl:mr-4" onClick={deleteNote}>
-                                                        Delete
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </Dialog.Panel>
-                                    </Transition.Child>
-                                </div>
-                            </div>
-                        </Dialog>
-                    </Transition>
-
-                    <Transition appear show={isViewNoteModal} as={Fragment}>
-                        <Dialog as="div" open={isViewNoteModal} onClose={() => setIsViewNoteModal(false)} className="relative z-50">
-                            <Transition.Child
-                                as={Fragment}
-                                enter="ease-out duration-300"
-                                enterFrom="opacity-0"
-                                enterTo="opacity-100"
-                                leave="ease-in duration-200"
-                                leaveFrom="opacity-100"
-                                leaveTo="opacity-0"
-                            >
-                                <div className="fixed inset-0 bg-[black]/60" />
-                            </Transition.Child>
-
-                            <div className="fixed inset-0 overflow-y-auto">
-                                <div className="flex min-h-full items-center justify-center px-4 py-8">
-                                    <Transition.Child
-                                        as={Fragment}
-                                        enter="ease-out duration-300"
-                                        enterFrom="opacity-0 scale-95"
-                                        enterTo="opacity-100 scale-100"
-                                        leave="ease-in duration-200"
-                                        leaveFrom="opacity-100 scale-100"
-                                        leaveTo="opacity-0 scale-95"
-                                    >
-                                        <Dialog.Panel className="panel w-full max-w-lg overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark">
-                                            <button
-                                                type="button"
-                                                onClick={() => setIsViewNoteModal(false)}
+                                                onClick={() => setIsViewDeedModal(false)}
                                                 className="absolute top-4 text-gray-400 outline-none hover:text-gray-800 ltr:right-4 rtl:left-4 dark:hover:text-gray-600"
                                             >
                                                 <IconX />
                                             </button>
                                             <div className="flex flex-wrap items-center gap-2 bg-[#fbfbfb] py-3 text-lg font-medium ltr:pl-5 ltr:pr-[50px] rtl:pl-[50px] rtl:pr-5 dark:bg-[#121c2c]">
-                                                <div className="ltr:mr-3 rtl:ml-3">{params.title}</div>
-                                                {params.tag && (
+                                                <div className="ltr:mr-3 rtl:ml-3">{params.name}</div>
+                                                {params.status && (
                                                     <button
                                                         type="button"
-                                                        className={`badge badge-outline-primary rounded-3xl capitalize ltr:mr-3 rtl:ml-3 ${(params.tag === 'personal' && 'shadow-primary',
-                                                            params.tag === 'work' && 'shadow-warning',
-                                                            params.tag === 'social' && 'shadow-info',
-                                                            params.tag === 'important' && 'shadow-danger')
+                                                        className={`badge badge-outline-primary rounded-3xl capitalize ltr:mr-3 rtl:ml-3 ${(
+                                                            params.isFav && 'shadow-warning',
+                                                            params.status === 'protocolado' && 'shadow-primary',
+                                                            params.status === 'arquivado' && 'shadow-slate-500',
+                                                            params.status === 'important' && 'shadow-danger')
                                                             }`}
                                                     >
-                                                        {params.tag}
+                                                        {params.status}
                                                     </button>
                                                 )}
                                                 {params.isFav && (
@@ -694,7 +324,7 @@ const PropositionList = () => {
                                                 <div className="text-base">{params.description}</div>
 
                                                 <div className="mt-8 ltr:text-right rtl:text-left">
-                                                    <button type="button" className="btn btn-outline-danger" onClick={() => setIsViewNoteModal(false)}>
+                                                    <button type="button" className="btn btn-outline-danger" onClick={() => setIsViewDeedModal(false)}>
                                                         Close
                                                     </button>
                                                 </div>

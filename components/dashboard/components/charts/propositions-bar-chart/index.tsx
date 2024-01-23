@@ -22,13 +22,14 @@ import DropdownMenu from '../../elements/dropdown-menu'
 import IconCopy from '@/components/icon/icon-copy'
 import { DashboardComponentProps, DashboardElementNames } from '@/components/dashboard/dashboard-legis'
 import { deleteDashboardComponent, duplicateDashboardComponent, saveDashboardComponentsState } from '@/store/dashboardLegisConfigSlice'
+import DashboardComponentLoading from '../../elements/loading'
 
 interface PropositionBarChartProps extends DashboardComponentProps {
     filters?: DeedFilters;
     authorsRangeInputValue?: number;
 }
 
-const PropositionsBarChart = ({ componentId, filters, authorsRangeInputValue = 3 }: PropositionBarChartProps) => {
+const PropositionsBarChart = ({ componentId, filters, authorsRangeInputValue = 3, triggerToast }: PropositionBarChartProps) => {
     const componentName = PropositionsBarChart.name as DashboardElementNames;
     const dispatch = useDispatch();
     const isDark = useSelector((state: IRootState) => state.themeConfig.theme === 'dark' || state.themeConfig.isDarkMode);
@@ -71,8 +72,8 @@ const PropositionsBarChart = ({ componentId, filters, authorsRangeInputValue = 3
                 setSeries(chartData.series.slice(0, authorsRangeInputValue));
                 setIsMounted(true);
             } catch (error) {
-                console.error('Erro ao buscar dados:', error);
-                // Lidar com o erro, se necessário
+                console.error(`ERROR: (${componentId} | ${componentName})`, error);
+                triggerToast({ type: 'error', color: 'danger', title: error, duration: 5000 })
             }
         };
 
@@ -374,7 +375,7 @@ const PropositionsBarChart = ({ componentId, filters, authorsRangeInputValue = 3
             </ConfigModal>
             <Suspense fallback={
                 <span className="w-5 h-5 m-auto mb-10">
-                    <span className="animate-ping inline-flex h-full w-full rounded-full bg-info"></span>
+                    <span className="animate-ping inline-flex h-full w-full rounded-full bg-primary"></span>
                 </span>
             }>
                 <div className="panel h-full p-0 lg:col-span-2">
@@ -389,7 +390,7 @@ const PropositionsBarChart = ({ componentId, filters, authorsRangeInputValue = 3
                                     {
                                         icon: <IconTrash className="h-4.5 w-4.5 shrink-0 ltr:mr-1 rtl:ml-1" />,
                                         text: 'Delete',
-                                        onClick: () => dispatch(deleteDashboardComponent({ id: componentId }))
+                                        onClick: () => dispatch(deleteDashboardComponent({ id: componentId, name: componentName }))
                                     },
                                     {
                                         icon: <IconCopy className="h-4.5 w-4.5 shrink-0 ltr:mr-1 rtl:ml-1" />,
@@ -413,13 +414,16 @@ const PropositionsBarChart = ({ componentId, filters, authorsRangeInputValue = 3
                             }
                         />
                     </div>
-                    {isMounted && <ReactApexChart
+                    {isMounted ?
+                        <ReactApexChart
                         options={deedsSeries.options}
                         series={series}
                         type="bar"
                         height={360}
                         width={'100%'}
-                    />}
+                    /> :
+                        <DashboardComponentLoading />
+                    }
                 </div>
             </Suspense>
         </React.Fragment>

@@ -3,7 +3,7 @@ import 'react-perfect-scrollbar/dist/css/styles.css';
 import '../styles/tailwind.css';
 import { Metadata } from 'next';
 import { Nunito } from 'next/font/google';
-import QueryClientProvider from './providers/query-client-provider';
+import NextAuthSessionProvider from './_providers/next-auth-session.provider';
 
 export const metadata: Metadata = {
     title: {
@@ -21,11 +21,13 @@ const nunito = Nunito({
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
     return (
         <html lang="en">
-            <body className={nunito.variable}>
-                <QueryClientProvider>
-                    <ProviderComponent>{children}</ProviderComponent>
-                </QueryClientProvider>
-            </body>
+            <NextAuthSessionProvider>
+                <body className={nunito.variable}>
+                    <ProviderComponent>
+                        {children}
+                    </ProviderComponent>
+                </body>
+            </NextAuthSessionProvider>
         </html>
     );
 }

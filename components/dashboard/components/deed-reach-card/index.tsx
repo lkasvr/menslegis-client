@@ -48,7 +48,7 @@ const DeedReachCard = ({ componentId, filters }: DeedReachCardProps) => {
                                     {
                                         icon: <IconTrash className="h-4.5 w-4.5 shrink-0 ltr:mr-1 rtl:ml-1" />,
                                         text: 'Delete',
-                                        onClick: () => dispatch(deleteDashboardComponent({ id: componentId }))
+                                        onClick: () => dispatch(deleteDashboardComponent({ id: componentId, name: componentName }))
                                     },
                                     {
                                         icon: <IconCopy className="h-4.5 w-4.5 shrink-0 ltr:mr-1 rtl:ml-1" />,
@@ -108,7 +108,7 @@ const DeedReachCard = ({ componentId, filters }: DeedReachCardProps) => {
                                     {
                                         icon: <IconTrash className="h-4.5 w-4.5 shrink-0 ltr:mr-1 rtl:ml-1" />,
                                         text: 'Delete',
-                                        onClick: () => dispatch(deleteDashboardComponent({ id: componentId }))
+                                        onClick: () => dispatch(deleteDashboardComponent({ id: componentId, name: componentName }))
                                     },
                                     {
                                         icon: <IconCopy className="h-4.5 w-4.5 shrink-0 ltr:mr-1 rtl:ml-1" />,

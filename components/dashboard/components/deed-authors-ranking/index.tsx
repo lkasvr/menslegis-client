@@ -26,7 +26,7 @@ interface DeedAuthorsRankingProps extends DashboardComponentProps {
     filters?: AuthorWithDeedsFilters;
 }
 
-const DeedAuthorsRanking = ({ componentId, filters }: DeedAuthorsRankingProps) => {
+const DeedAuthorsRanking = ({ componentId, filters, triggerToast }: DeedAuthorsRankingProps) => {
     const componentName = DeedAuthorsRanking.name as DashboardElementNames;
     const dispatch = useDispatch();
     const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl';
@@ -49,18 +49,23 @@ const DeedAuthorsRanking = ({ componentId, filters }: DeedAuthorsRankingProps) =
 
     useEffect(() => {
         const fetchAuthorsRankingData = async () => {
-            const [authors, types, authorsWithDeeds] = await Promise.all([
-                getAuthors(),
-                getTypes(),
-                getAuthorsRankingByDeed(filters)
-            ]);
+            try {
+                const [authors, types, authorsWithDeeds] = await Promise.all([
+                    getAuthors(),
+                    getTypes(),
+                    getAuthorsRankingByDeed(filters)
+                ]);
 
-            setAuthorsRankedWithDeeds(authorsWithDeeds.data);
-            setPeriod(authorsWithDeeds.period);
-            setAuthorsFilters(authorsWithDeeds.filters);
+                setAuthorsRankedWithDeeds(authorsWithDeeds.data);
+                setPeriod(authorsWithDeeds.period);
+                setAuthorsFilters(authorsWithDeeds.filters);
 
-            setAuthors(authors);
-            setTypes(types);
+                setAuthors(authors);
+                setTypes(types);
+            } catch (error) {
+                console.error(`ERROR: (${componentId} | ${componentName})`, error);
+                triggerToast({ type: 'error', color: 'danger', title: error, duration: 5000 })
+            }
         }
         fetchAuthorsRankingData();
     }, [filters]);
@@ -220,7 +225,7 @@ const DeedAuthorsRanking = ({ componentId, filters }: DeedAuthorsRankingProps) =
                             {
                                 icon: <IconTrash className="h-4.5 w-4.5 shrink-0 ltr:mr-1 rtl:ml-1" />,
                                 text: 'Delete',
-                                onClick: () => dispatch(deleteDashboardComponent({ id: componentId }))
+                                onClick: () => dispatch(deleteDashboardComponent({ id: componentId, name: componentName }))
                             },
                             {
                                 icon: <IconCopy className="h-4.5 w-4.5 shrink-0 ltr:mr-1 rtl:ml-1" />,

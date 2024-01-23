@@ -29,7 +29,7 @@ const Sidebar = () => {
     const [errorSubMenu, setErrorSubMenu] = useState(false);
     const themeConfig = useSelector((state: IRootState) => state.themeConfig);
     const semidark = useSelector((state: IRootState) => state.themeConfig.semidark);
-    const toggleMenu = (value: string) => setCurrentMenu((oldValue) => oldValue === value ? '' : value);;
+    const toggleMenu = (value: string) => setCurrentMenu((oldValue) => oldValue === value ? '' : value);
 
     useEffect(() => {
         const selector = document.querySelector('.sidebar ul a[href="' + window.location.pathname + '"]');
@@ -70,11 +70,17 @@ const Sidebar = () => {
             <nav
                 className={`sidebar fixed bottom-0 top-0 z-50 h-full min-h-screen w-[260px] shadow-[5px_0_25px_0_rgba(94,92,154,0.1)] transition-all duration-300 ${semidark ? 'text-white-dark' : ''}`}
             >
+
                 <div className="h-full bg-white dark:bg-black">
-                    <div className="flex items-center justify-between px-4 py-3">
+                    <div className="flex items-center justify-between px-1 py-3">
                         <Link href="/" className="main-logo flex shrink-0 items-center">
-                            <Image className="ml-[5px] w-12 flex-none" src="/assets/images/logo/logoMLinner(328-328).png" alt="logo" width={328} height={328} />
-                            <span className="align-middle text-2xl font-semibold ltr:ml-1.5 rtl:mr-1.5 dark:text-white-light lg:inline">MENSLEGIS</span>
+                            <Image
+                                className="ml-[5px] w-52 flex-none"
+                                src="/assets/images/logo/logo(500x145).png"
+                                alt="logo"
+                                width={500}
+                                height={145}
+                            />
                         </Link>
 
                         <button
@@ -127,26 +133,7 @@ const Sidebar = () => {
                                             </div>
                                         </Link>
                                     </li>
-
-
-                                    <li className="nav-item">
-                                        <Link href="/apps/calendar" className="group">
-                                            <div className="flex items-center">
-                                                <IconMenuCalendar className="shrink-0 group-hover:!text-primary" />
-                                                <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">{t('calendar')}</span>
-                                            </div>
-                                        </Link>
-                                    </li>
                                 </ul>
-                            </li>
-
-                            <li className="menu nav-item">
-                                <Link href="/font-icons" className="group">
-                                    <div className="flex items-center">
-                                        <IconMenuFontIcons className="shrink-0 group-hover:!text-primary" />
-                                        <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">{t('font_icons')}</span>
-                                    </div>
-                                </Link>
                             </li>
 
                             <h2 className="-mx-4 mb-1 flex items-center bg-white-light/30 px-7 py-3 font-extrabold uppercase dark:bg-dark dark:bg-opacity-[0.08]">
@@ -173,88 +160,6 @@ const Sidebar = () => {
                                         </li>
                                         <li>
                                             <Link href="/users/user-account-settings">{t('account_settings')}</Link>
-                                        </li>
-                                    </ul>
-                                </AnimateHeight>
-                            </li>
-
-                            <li className="menu nav-item">
-                                <button type="button" className={`${currentMenu === 'page' ? 'active' : ''} nav-link group w-full`} onClick={() => toggleMenu('page')}>
-                                    <div className="flex items-center">
-                                        <IconMenuPages className="shrink-0 group-hover:!text-primary" />
-                                        <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">{t('pages')}</span>
-                                    </div>
-
-                                    <div className={currentMenu !== 'page' ? '-rotate-90 rtl:rotate-90' : ''}>
-                                        <IconCaretDown />
-                                    </div>
-                                </button>
-
-                                <AnimateHeight duration={300} height={currentMenu === 'page' ? 'auto' : 0}>
-                                    <ul className="sub-menu text-gray-500">
-                                        <li>
-                                            <Link href="/pages/knowledge-base">{t('knowledge_base')}</Link>
-                                        </li>
-                                        <li>
-                                            <Link href="/pages/contact-us-boxed" target="_blank">
-                                                {t('contact_us_boxed')}
-                                            </Link>
-                                        </li>
-                                        <li>
-                                            <Link href="/pages/contact-us-cover" target="_blank">
-                                                {t('contact_us_cover')}
-                                            </Link>
-                                        </li>
-                                        <li>
-                                            <Link href="/pages/faq">{t('faq')}</Link>
-                                        </li>
-                                        <li>
-                                            <Link href="/pages/coming-soon-boxed" target="_blank">
-                                                {t('coming_soon_boxed')}
-                                            </Link>
-                                        </li>
-                                        <li>
-                                            <Link href="/pages/coming-soon-cover" target="_blank">
-                                                {t('coming_soon_cover')}
-                                            </Link>
-                                        </li>
-                                        <li className="menu nav-item">
-                                            <button
-                                                type="button"
-                                                className={`${errorSubMenu ? 'open' : ''
-                                                    } w-full before:h-[5px] before:w-[5px] before:rounded before:bg-gray-300 hover:bg-gray-100 ltr:before:mr-2 rtl:before:ml-2 dark:text-[#888ea8] dark:hover:bg-gray-900`}
-                                                onClick={() => setErrorSubMenu(!errorSubMenu)}
-                                            >
-                                                {t('error')}
-                                                <div className={`${errorSubMenu ? '-rotate-90 rtl:rotate-90' : ''} ltr:ml-auto rtl:mr-auto`}>
-                                                    <IconCaretsDown fill={true} className="h-4 w-4" />
-                                                </div>
-                                            </button>
-                                            <AnimateHeight duration={300} height={errorSubMenu ? 'auto' : 0}>
-                                                <ul className="sub-menu text-gray-500">
-                                                    <li>
-                                                        <a href="/pages/error404" target="_blank">
-                                                            {t('404')}
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a href="/pages/error500" target="_blank">
-                                                            {t('500')}
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a href="/pages/error503" target="_blank">
-                                                            {t('503')}
-                                                        </a>
-                                                    </li>
-                                                </ul>
-                                            </AnimateHeight>
-                                        </li>
-
-                                        <li>
-                                            <Link href="/pages/maintenence" target="_blank">
-                                                {t('maintenence')}
-                                            </Link>
                                         </li>
                                     </ul>
                                 </AnimateHeight>

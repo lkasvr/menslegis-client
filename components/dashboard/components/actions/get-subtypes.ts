@@ -14,7 +14,7 @@ export type Subtype = {
 }
 
 export async function getSubtypes(filters?: subtypeFilters): Promise<Subtype[]> {
-    const res = await fetch(generatedURL('http://localhost:3000/deed-subtype', filters))
+    const res = await fetch(generatedURL(`${process.env.MENSLEGIS_API_URL}/deed-subtype`, filters))
     if (!res.ok) throw new Error('Failed to fetch data')
     return res.json()
 }
