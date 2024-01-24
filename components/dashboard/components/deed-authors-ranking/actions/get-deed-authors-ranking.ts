@@ -25,7 +25,7 @@ export const getAuthorsRankingByDeed = async (filters?: AuthorWithDeedsFilters):
     const initialDate = parse(`${filters.initialDate}`, 'yyyy-MM-dd', new Date());
     const finalDate = parse(`${filters.finalDate}`, 'yyyy-MM-dd', new Date());
 
-    const data = authors.toSorted((authorA, authorB) =>  authorB.deeds.length - authorA.deeds.length);
+    const data = authors.sort((authorA, authorB) =>  authorB.deeds.length - authorA.deeds.length);
 
     return {
         filters,
