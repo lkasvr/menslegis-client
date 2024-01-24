@@ -21,10 +21,10 @@ const Page = () => {
                     <div className="ltr:xl:-skew-x-[14deg] rtl:xl:skew-x-[14deg]">
                         <Link href="/" className="ms-10 block w-60 lg:w-96">
                             <Image
-                                src="/assets/images/mens-legis-logo-cover.svg"
+                                src="/assets/images/logo/logo(1000x1000).png"
                                 width={1000}
                                 height={1000}
-                                alt="Logo Cover"
+                                alt="Logo"
                                 className="h-full w-full"
                             />
                         </Link>
@@ -34,7 +34,7 @@ const Page = () => {
                     <div className="flex w-full max-w-[440px] items-center gap-2 lg:absolute lg:end-6 lg:top-6 lg:max-w-full">
                         <Link href="/" className="block w-8 lg:hidden">
                             <Image
-                                src="/assets/images/auth/Mens-Legis-Login-Cover.svg"
+                                src="/assets/images/logo/logo.svg"
                                 alt="Logo"
                                 className="mx-auto w-10"
                                 width={500}

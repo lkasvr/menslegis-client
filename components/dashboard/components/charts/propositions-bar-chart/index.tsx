@@ -70,10 +70,11 @@ const PropositionsBarChart = ({ componentId, filters, authorsRangeInputValue = 3
                 setDeedSubtype(chartData.deeds[0].deedSubtype);
                 setChartData(chartData);
                 setSeries(chartData.series.slice(0, authorsRangeInputValue));
-                setIsMounted(true);
             } catch (error) {
                 console.error(`ERROR: (${componentId} | ${componentName})`, error);
                 triggerToast({ type: 'error', color: 'danger', title: error, duration: 5000 })
+            } finally {
+                setIsMounted(true);
             }
         };
 
@@ -416,12 +417,12 @@ const PropositionsBarChart = ({ componentId, filters, authorsRangeInputValue = 3
                     </div>
                     {isMounted ?
                         <ReactApexChart
-                        options={deedsSeries.options}
-                        series={series}
-                        type="bar"
-                        height={360}
-                        width={'100%'}
-                    /> :
+                            options={deedsSeries.options}
+                            series={series}
+                            type="bar"
+                            height={360}
+                            width={'100%'}
+                        /> :
                         <DashboardComponentLoading />
                     }
                 </div>

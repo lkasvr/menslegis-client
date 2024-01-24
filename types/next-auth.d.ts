@@ -1,13 +1,13 @@
 import { User as NextAuthUser } from 'next-auth';
 import { JWT } from 'next-auth/jwt';
 
-interface IUser {
+interface IUser extends JWT {
     id: string;
     picture?: string | null;
     name: string;
     email: string;
     emailVerified?: boolean;
-    phoneNumber?: string;
+    phoneNumber?: string | null;
     provider?: string;
 }
 
@@ -29,12 +29,13 @@ declare module 'next-auth/jwt' {
         name: string;
         email: string;
         emailVerified?: boolean;
-        phoneNumber?: string;
+        phoneNumber?: string | null;
         provider?: string;
         iat: number;
         exp: number,
         jti: string,
         expiration: number;
+        accessToken: string;
   }
 }
 

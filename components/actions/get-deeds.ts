@@ -2,6 +2,7 @@
 
 import { generatedURL } from '@/components/utils/tools';
 import { Author } from '@/components/actions/get-authors';
+import { getSession } from "@/nextAuth/serverSession";
 
 export type DeedFilters = {
     limit?: string;
@@ -31,7 +32,13 @@ export type Deed = {
 }
 
 export async function getDeeds(filters?: DeedFilters): Promise<Deed[]> {
-    const res = await fetch(generatedURL(`${process.env.MENSLEGIS_API_URL}/deed`, filters));
+    const session = await getSession();
+    if (!session) throw new Error('Session not available');
+
+    const { accessToken } = session.user;
+    const res = await fetch(generatedURL(`${process.env.MENSLEGIS_API_URL}/deed`, filters), {
+        headers: { authorization: `Bearer ${accessToken}` }
+    });
     if (!res.ok) throw new Error('Failed to fetch data')
     return res.json()
 }

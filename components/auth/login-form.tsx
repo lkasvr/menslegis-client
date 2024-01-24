@@ -24,10 +24,6 @@ const LoginForm = () => {
                 redirect: true,
                 callbackUrl: '/',
             });
-
-
-            console.log(response);
-            console.log(response?.error);
         } catch (error) {
             console.error(error);
         } finally {

@@ -4,6 +4,7 @@ const nextConfig = {
     swcMinify: true,
     eslint: {
         ignoreDuringBuilds: true,
+        dirs: ['/**/*']
     },
     env: {
         // NEXT AUTH
@@ -23,9 +24,6 @@ const nextConfig = {
         FIREBASE_GOOGLE_CLIENT_ID: process.env.FIREBASE_GOOGLE_CLIENT_ID,
         FIREBASE_GOOGLE_CLIENT_SECRET_KEY: process.env.FIREBASE_GOOGLE_CLIENT_SECRET_KEY,
         FIREBASE_GOOGLE_APPLICATION_CREDENTIALS: process.env.FIREBASE_GOOGLE_APPLICATION_CREDENTIALS,
-        // OAuth 2.0 GOOGLE PROVIDER
-        GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
-        GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
         // MENSLEGIS API
         MENSLEGIS_API_URL: process.env.MENSLEGIS_API_URL,
     },
