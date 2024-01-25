@@ -38,7 +38,7 @@ const DashboardLegis = () => {
     const dispatch = useDispatch();
     const { components, alerts } = useSelector((state: IRootState) => state.dashboardLegisConfig.dashboard);
 
-    const triggerToast = ({ type, color, title, text, duration }: toastParams) => {
+    const triggerToast = useCallback(({ type, color, title, text, duration }: toastParams) => {
         const toast = Swal.mixin({
             toast: true,
             position: 'top',
@@ -56,7 +56,7 @@ const DashboardLegis = () => {
             text,
             padding: '10px 20px',
         });
-    };
+    }, []);
 
     const componentsMap = useMemo(() => {
         return {
@@ -72,7 +72,7 @@ const DashboardLegis = () => {
         [componentsMap]
     );
 
-    const showAlerts = () => {
+    const showAlerts = useCallback(() => {
         alerts.forEach(alert => {
             if (alert.status !== 'displayed') {
                 triggerToast(
@@ -87,8 +87,8 @@ const DashboardLegis = () => {
                 dispatch(setDisplayedDashboardAlert({ id: alert.id }));
             }
         })
-    }
-    useEffect(() => showAlerts(), [alerts]);
+    }, [alerts, dispatch, triggerToast])
+    useEffect(() => showAlerts(), [showAlerts]);
 
     return (
         <React.Fragment>

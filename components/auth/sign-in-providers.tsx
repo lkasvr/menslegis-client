@@ -23,7 +23,7 @@ const SignInProviders = ({ isDisabled, setIsDisabled }: SignInProvidersProps) =>
                     className="w-full h-full flex justify-center items-center btn btn-outline-primary"
                 >
                     <IconGoogle className="h-10 w-10 mr-2" />
-                    Entre com o <b>Google</b>
+                    Entre com o&nbsp;<b>Google</b>
                 </button>
             </li>
         </ul>
