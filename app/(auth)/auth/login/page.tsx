@@ -1,4 +1,4 @@
-import ComponentsAuthLoginForm from '@/components/auth/login-form';
+import LoginForm from '@/components/auth/login-form';
 import { Metadata } from 'next';
 import Link from 'next/link';
 import React from 'react';
@@ -47,14 +47,7 @@ const Page = () => {
                             <h1 className="text-3xl font-extrabold uppercase !leading-snug text-[#056367] md:text-4xl">Sign in</h1>
                             <p className="text-base font-bold leading-normal text-white-dark">Entre com seu email e senha para logar</p>
                         </div>
-                        <ComponentsAuthLoginForm />
-                        <div className="relative my-7 text-center md:mb-9">
-                            <span className="absolute inset-x-0 top-1/2 h-px w-full -translate-y-1/2 bg-white-light dark:bg-white-dark"></span>
-                            <span className="relative bg-white px-2 font-bold uppercase text-white-dark dark:bg-dark dark:text-white-light">ou</span>
-                        </div>
-                        <div className="mb-10 md:mb-[60px]">
-                            <SignInProviders />
-                        </div>
+                        <LoginForm />
                         <div className="text-center dark:text-black">
                             Don&apos;t have an account ?&nbsp;
                             <Link
