@@ -11,10 +11,7 @@ import IconMenuDashboard from '@/components/icon/menu/icon-menu-dashboard';
 import IconCaretDown from '@/components/icon/icon-caret-down';
 import IconMinus from '@/components/icon/icon-minus';
 import IconMenuNotes from '@/components/icon/menu/icon-menu-notes';
-import IconMenuCalendar from '@/components/icon/menu/icon-menu-calendar';
-import IconMenuFontIcons from '@/components/icon/menu/icon-menu-font-icons';
 import IconMenuUsers from '@/components/icon/menu/icon-menu-users';
-import IconMenuPages from '@/components/icon/menu/icon-menu-pages';
 import IconMenuAuthentication from '@/components/icon/menu/icon-menu-authentication';
 import IconMenuDocumentation from '@/components/icon/menu/icon-menu-documentation';
 import { usePathname } from 'next/navigation';
@@ -74,13 +71,25 @@ const Sidebar = () => {
                 <div className="h-full bg-white dark:bg-black">
                     <div className="flex items-center justify-between px-1 py-3">
                         <Link href="/" className="main-logo flex shrink-0 items-center">
-                            <Image
-                                className="ml-[5px] w-52 flex-none"
-                                src="/assets/images/logo/logo(500x145).png"
-                                alt="logo"
-                                width={500}
-                                height={145}
-                            />
+                            {themeConfig.menu === 'collapsible-vertical'
+                                ?
+                                <Image
+                                    className="ml-[5px] w-14 flex-none"
+                                    src="/assets/images/logo/logo(56x49).svg"
+                                    alt="logo"
+                                    width={56}
+                                    height={49}
+                                />
+                                :
+                                <Image
+                                    className="ml-1 w-52 flex-none"
+                                    src="/assets/images/logo/logo(500x145).png"
+                                    alt="logo"
+                                    width={500}
+                                    height={145}
+                                />
+                            }
+
                         </Link>
 
                         <button
@@ -129,7 +138,10 @@ const Sidebar = () => {
                                         <Link href="/apps/propositions" className="group">
                                             <div className="flex items-center">
                                                 <IconMenuNotes className="shrink-0 group-hover:!text-primary" />
-                                                <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">{t('Propositions')}</span>
+                                                <span
+                                                    className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">
+                                                    {t('Propositions')}
+                                                </span>
                                             </div>
                                         </Link>
                                     </li>
@@ -231,7 +243,10 @@ const Sidebar = () => {
                             <li className="menu nav-item">
                                 <div className="flex items-center">
                                     <IconMenuDocumentation className="shrink-0 group-hover:!text-primary" />
-                                    <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">{t('documentation')}</span>
+                                    <span
+                                        className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">
+                                        {t('documentation')}
+                                    </span>
                                 </div>
                             </li>
                         </ul>

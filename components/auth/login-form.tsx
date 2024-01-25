@@ -102,7 +102,7 @@ const LoginForm = () => {
                     className="btn btn-gradient !mt-6 w-full border-0 uppercase shadow-[0_10px_20px_-10px_rgba(5,99,103,0.44)]"
                     disabled={isDisabled}
                 >
-                    Sign in
+                    Entrar
                 </button>
             </Form>
             <div className="relative my-7 text-center md:mb-9">

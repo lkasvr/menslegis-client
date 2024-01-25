@@ -44,7 +44,7 @@ const Page = () => {
                     </div>
                     <div className="w-full max-w-[440px] lg:mt-16">
                         <div className="mb-10">
-                            <h1 className="text-3xl font-extrabold uppercase !leading-snug text-[#056367] md:text-4xl">Sign in</h1>
+                            <h1 className="text-3xl font-extrabold uppercase !leading-snug text-[#056367] md:text-4xl">Entrar</h1>
                             <p className="text-base font-bold leading-normal text-white-dark">Entre com seu email e senha para logar</p>
                         </div>
                         <LoginForm />

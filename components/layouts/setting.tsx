@@ -20,9 +20,8 @@ const Setting = () => {
             <div className={`${(showCustomizer && '!block') || ''} fixed inset-0 z-[51] hidden bg-[black]/60 px-4 transition-[display]`} onClick={() => setShowCustomizer(false)}></div>
 
             <nav
-                className={`${
-                    (showCustomizer && 'ltr:!right-0 rtl:!left-0') || ''
-                } fixed bottom-0 top-0 z-[51] w-full max-w-[400px] bg-white p-4 shadow-[5px_0_25px_0_rgba(94,92,154,0.1)] transition-[right] duration-300 ltr:-right-[400px] rtl:-left-[400px] dark:bg-black`}
+                className={`${(showCustomizer && 'ltr:!right-0 rtl:!left-0') || ''
+                    } fixed bottom-0 top-0 z-[51] w-full max-w-[400px] bg-white p-4 shadow-[5px_0_25px_0_rgba(94,92,154,0.1)] transition-[right] duration-300 ltr:-right-[400px] rtl:-left-[400px] dark:bg-black`}
             >
                 <button
                     type="button"
@@ -39,7 +38,7 @@ const Setting = () => {
                         </button>
 
                         <h4 className="mb-1 dark:text-white">TEMPLATE CUSTOMIZER</h4>
-                        <p className="text-white-dark">Set preferences that will be cookied for your live preview demonstration.</p>
+                        <p className="text-white-dark">Set preferences that will be cookied.</p>
                     </div>
 
                     <div className="mb-3 rounded-md border border-dashed border-white-light p-3 dark:border-[#1b2e4b]">
