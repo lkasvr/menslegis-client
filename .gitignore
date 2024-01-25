@@ -36,4 +36,4 @@ yarn-error.log*
 next-env.d.ts
 
 # credentials
-# /services/firebase/service-account.json
+./services/firebase/service-account.json

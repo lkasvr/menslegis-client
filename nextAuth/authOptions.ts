@@ -6,12 +6,18 @@ import { auth } from "@/services/firebase/service";
 import { GoogleAuthProvider, signInWithCredential, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { add, getTime } from "date-fns";
 
+const serviceAccount = JSON.parse(
+  process.env.FIREBASE_GOOGLE_APPLICATION_CREDENTIALS as string
+);
+
 if (admin.apps.length < 1)
-    admin.initializeApp({ credential: admin.credential.cert(process.env.FIREBASE_GOOGLE_APPLICATION_CREDENTIALS!) });
+    admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount)
+    });
 
 const authOptions: NextAuthOptions = {
     secret: process.env.NEXTAUTH_SECRET,
-    debug: false, //process.env.ENVIRONMENT !== 'production',
+    debug: process.env.ENVIRONMENT !== 'production',
     session: {
         strategy: 'jwt',
         maxAge: 3 * 60 * 60,
