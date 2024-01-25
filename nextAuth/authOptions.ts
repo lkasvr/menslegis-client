@@ -6,10 +6,7 @@ import { auth } from "@/services/firebase/service";
 import { GoogleAuthProvider, signInWithCredential, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { add, getTime } from "date-fns";
 
-const serviceAccount = JSON.parse(
-  process.env.FIREBASE_GOOGLE_APPLICATION_CREDENTIALS as string
-);
-
+const serviceAccount = JSON.parse(process.env.FIREBASE_GOOGLE_APPLICATION_CREDENTIALS!);
 if (admin.apps.length < 1)
     admin.initializeApp({
         credential: admin.credential.cert(serviceAccount)

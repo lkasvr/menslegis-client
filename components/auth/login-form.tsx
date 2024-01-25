@@ -18,7 +18,7 @@ const LoginForm = () => {
     const handleSubmit = async ({ identifier, password }: LoginForm) => {
         try {
             setIsDisabled(true);
-            const response = await signIn('credentials', {
+            await signIn('credentials', {
                 identifier,
                 password,
                 redirect: true,

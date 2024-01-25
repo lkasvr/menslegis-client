@@ -8,7 +8,6 @@ const nextConfig = {
     },
     env: {
         // NEXT AUTH
-        NEXTAUTH_URL: process.env.NEXTAUTH_URL,
         NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
         NEXTAUTH_LOGIN_PATH: process.env.NEXTAUTH_LOGIN_PATH,
         // ENVIRONMENT
@@ -26,9 +25,6 @@ const nextConfig = {
         FIREBASE_GOOGLE_APPLICATION_CREDENTIALS: process.env.FIREBASE_GOOGLE_APPLICATION_CREDENTIALS,
         // MENSLEGIS API
         MENSLEGIS_API_URL: process.env.MENSLEGIS_API_URL,
-        // FIREBASE SERVICE ACCOUNT
-        SA_PRIVATE_KEY: process.env.SA_PRIVATE_KEY,
-        SA_CLIENT_EMAIL: process.env.SA_CLIENT_EMAIL,
     },
     images: {
         remotePatterns: [
