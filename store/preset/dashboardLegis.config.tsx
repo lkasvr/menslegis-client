@@ -34,14 +34,6 @@ const dashboardLegisConfig: DashboardLegisConfig = {
         components: [
             {
                 id: uuidv4(),
-                name: 'DeedReachCard',
-            },
-            {
-                id: uuidv4(),
-                name: 'DeedReachCard',
-            },
-            {
-                id: uuidv4(),
                 name: 'DeedAuthorsRanking',
             },
             {
