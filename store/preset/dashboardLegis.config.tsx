@@ -1,5 +1,6 @@
 import { DashboardElementNames } from '@/components/dashboard/dashboard-legis';
 import { v4 as uuidv4 } from 'uuid';
+import { Alert } from './app.config';
 
 export type DashboardComponent = {
     id: string;
@@ -7,26 +8,16 @@ export type DashboardComponent = {
     props?: any
 };
 
-export type DashboardAlerts = {
-    id: string;
-    type: 'success' | 'error' | 'warning' | 'info' | 'question',
-    color: 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info',
-    title: any,
-    text?: any,
-    duration?: number
-    status: 'display' | 'displayed';
-};
-
 export interface DashboardLegisConfig {
     dashboard: {
-        alerts: DashboardAlerts[];
+        alerts: Alert[];
         name: 'dashboard-legis',
         maxComponents: number;
         components: DashboardComponent[];
     }
 }
 
-const dashboardLegisConfig: DashboardLegisConfig = {
+const dashboardLegisConfigPreset: DashboardLegisConfig = {
     dashboard: {
         alerts: [],
         name: 'dashboard-legis',
@@ -49,4 +40,4 @@ const dashboardLegisConfig: DashboardLegisConfig = {
     }
 };
 
-export default dashboardLegisConfig;
+export default dashboardLegisConfigPreset;

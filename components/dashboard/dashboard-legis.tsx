@@ -12,18 +12,11 @@ import { saveDashboardComponentsOnLocalStorage, setDisplayedDashboardAlert } fro
 import DeedReachCard from './components/deed-reach-card';
 import IconSave from '@/components/icon/icon-save';
 import Swal from 'sweetalert2';
+import { toastParams } from '@/App';
 
 export type DashboardElement = {
     id: string;
     content: ReactElement<any, string | JSXElementConstructor<any>>;
-};
-
-type toastParams = {
-    type: 'success' | 'error' | 'warning' | 'info' | 'question',
-    color: 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info',
-    title: any,
-    text?: any,
-    duration?: number
 };
 
 export interface DashboardComponentProps {

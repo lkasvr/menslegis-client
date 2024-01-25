@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import dashboardLegisConfig, { DashboardComponent, DashboardLegisConfig } from './preset/dashboardLegis.config';
+import dashboardLegisConfigPreset, { DashboardComponent, DashboardLegisConfig } from './preset/dashboardLegis.config';
 import { loadDashboardComponentsFromLocalStorage } from './utils/index';
 import { v4 as uuidv4 } from 'uuid';
 import { DashboardElementNames } from '@/components/dashboard/dashboard-legis';
@@ -7,14 +7,14 @@ import { DashboardElementNames } from '@/components/dashboard/dashboard-legis';
 const initialState: DashboardLegisConfig = {
     dashboard: {
         alerts: [],
-        name: dashboardLegisConfig.dashboard.name,
-        maxComponents: dashboardLegisConfig.dashboard.maxComponents,
-        components: loadDashboardComponentsFromLocalStorage(dashboardLegisConfig.dashboard.name) ?? dashboardLegisConfig.dashboard.components,
+        name: dashboardLegisConfigPreset.dashboard.name,
+        maxComponents: dashboardLegisConfigPreset.dashboard.maxComponents,
+        components: loadDashboardComponentsFromLocalStorage(dashboardLegisConfigPreset.dashboard.name) ?? dashboardLegisConfigPreset.dashboard.components,
     },
 };
 
 const dashboardLegisConfigSlice = createSlice({
-    name: 'dashboardLegis',
+    name: 'DashboardLegisSlice',
     initialState: initialState,
     reducers: {
         saveDashboardComponentsState(state, { payload }: PayloadAction<{ id: string, props?: any }>) {

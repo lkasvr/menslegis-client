@@ -7,6 +7,8 @@ import IconUnlockDots from '@/components/icon/icon-unlock-dots';
 import { signIn } from 'next-auth/react';
 import { Field } from 'formik';
 import SignInProviders from './sign-in-providers';
+import { useDispatch } from 'react-redux';
+import { displayAlert } from '@/store/appConfigSlice';
 
 type LoginForm = {
     identifier: string;
@@ -14,6 +16,9 @@ type LoginForm = {
 };
 
 const LoginForm = () => {
+    const dispatch = useDispatch();
+
+
     const [isDisabled, setIsDisabled] = useState(false);
     const [passwordInputType, setPasswordInputType] = useState<'password' | 'text'>('password');
     const handleSubmit = async ({ identifier, password }: LoginForm) => {
@@ -27,6 +32,11 @@ const LoginForm = () => {
             });
         } catch (error) {
             console.error(error);
+            dispatch(displayAlert({
+                color: 'danger',
+                type: 'error',
+                title: 'Erro no login. Tente novamente'
+            }));
         } finally {
             setIsDisabled(false);
         }

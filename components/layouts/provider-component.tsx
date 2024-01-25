@@ -15,7 +15,7 @@ const ProviderComponent = ({ children }: IProps) => {
     return (
         <Provider store={store}>
             <Suspense fallback={<Loading />}>
-                <App>{children} </App>
+                <App>{children}</App>
             </Suspense>
         </Provider>
     );
