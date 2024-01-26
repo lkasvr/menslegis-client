@@ -40,7 +40,7 @@ const DragndropGrid = ({ title, elements }: DragndropGridProps) => {
                     list={gridDrag}
                     setList={setGridDrag}
                     animation={200}
-                    className="xs grid grid-cols-2 place-items-center gap-4">
+                    className="xs grid grid-cols-1 2xl:grid-cols-2 place-items-center gap-4">
                     {gridDrag.map((item) => {
                         return (
                             <div key={item.id} className='w-full h-full'>
