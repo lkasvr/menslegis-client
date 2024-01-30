@@ -49,11 +49,11 @@ const Page = () => {
                         </div>
                         <LoginForm />
                         <div className="text-center dark:text-black">
-                            Don&apos;t have an account ?&nbsp;
+                            Não possui uma conta ?
                             <Link
                                 href="/auth/cover-register"
                                 className="uppercase text-primary underline transition hover:text-black dark:hover:text-white">
-                                SIGN UP
+                                REGISTRE-SE
                             </Link>
                         </div>
                     </div>

@@ -239,16 +239,6 @@ const Sidebar = () => {
                                 <IconMinus className="hidden h-5 w-4 flex-none" />
                                 <span>{t('supports')}</span>
                             </h2>
-
-                            <li className="menu nav-item">
-                                <div className="flex items-center">
-                                    <IconMenuDocumentation className="shrink-0 group-hover:!text-primary" />
-                                    <span
-                                        className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">
-                                        {t('documentation')}
-                                    </span>
-                                </div>
-                            </li>
                         </ul>
                     </PerfectScrollbar>
                 </div>
