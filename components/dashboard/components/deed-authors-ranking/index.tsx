@@ -4,7 +4,7 @@ import IconSettings from '@/components/icon/icon-settings';
 import IconXCircle from '@/components/icon/icon-x-circle';
 import IconCopy from '@/components/icon/icon-copy';
 import { IRootState } from '@/store';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import ConfigModal from '../elements/config-modal';
 import { getAuthorsRankingByDeed } from './actions/get-deed-authors-ranking';
@@ -27,7 +27,7 @@ interface DeedAuthorsRankingProps extends DashboardComponentProps {
 }
 
 const DeedAuthorsRanking = ({ componentId, filters, triggerToast }: DeedAuthorsRankingProps) => {
-    const componentName = DeedAuthorsRanking.name as DashboardElementNames;
+    const componentName: DashboardElementNames = 'DeedAuthorsRanking';
     const dispatch = useDispatch();
     const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl';
 

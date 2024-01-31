@@ -29,7 +29,7 @@ const DeedResumeTable = ({ componentId, filters, triggerToast }: DeedResumeTable
     const dispatch = useDispatch();
     const isDark = useSelector((state: IRootState) => state.themeConfig.theme === 'dark' || state.themeConfig.isDarkMode);
 
-    const componentName = DeedResumeTable.name as DashboardElementNames;
+    const componentName: DashboardElementNames = 'DeedResumeTable';
     const [showModal, setShowModal] = useState(false);
     const [deeds, setDeeds] = useState<Deed[]>();
     const [deedFilters, setDeedFilters] = useState<DeedFilters | undefined>(filters);

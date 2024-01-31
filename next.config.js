@@ -6,9 +6,9 @@ const nextConfig = {
         ignoreDuringBuilds: true,
         dirs: ['/**/*']
     },
+    productionBrowserSourceMaps: process.env.ENVIRONMENT === 'development' || process.env.ENVIRONMENT === 'dev',
     env: {
         // NEXT AUTH
-        NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
         NEXTAUTH_LOGIN_PATH: process.env.NEXTAUTH_LOGIN_PATH,
         // ENVIRONMENT
         ENVIRONMENT: process.env.ENVIRONMENT,

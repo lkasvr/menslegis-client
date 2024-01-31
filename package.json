@@ -6,7 +6,8 @@
         "dev": "next dev",
         "build": "next build",
         "start": "next start",
-        "lint": "next lint"
+        "lint": "next lint",
+        "start:dev": "NEXT_PUBLIC_NEXT_LOGGING=true next start"
     },
     "dependencies": {
         "@emotion/react": "^11.10.6",

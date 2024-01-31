@@ -1,6 +1,6 @@
 'use client'
 import { IRootState } from '@/store'
-import React, { Suspense, useCallback, useEffect, useState } from 'react'
+import React, { Suspense, useEffect, useState } from 'react'
 import ReactApexChart from 'react-apexcharts'
 import { useSelector, useDispatch } from 'react-redux'
 import { DeedFilters } from '@/components/actions/get-deeds'
@@ -30,7 +30,7 @@ interface PropositionBarChartProps extends DashboardComponentProps {
 }
 
 const PropositionsBarChart = ({ componentId, filters, authorsRangeInputValue = 3, triggerToast }: PropositionBarChartProps) => {
-    const componentName = PropositionsBarChart.name as DashboardElementNames;
+    const componentName: DashboardElementNames = 'PropositionsBarChart';
     const dispatch = useDispatch();
     const isDark = useSelector((state: IRootState) => state.themeConfig.theme === 'dark' || state.themeConfig.isDarkMode);
     const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl';
@@ -380,49 +380,52 @@ const PropositionsBarChart = ({ componentId, filters, authorsRangeInputValue = 3
                 </span>
             }>
                 <div className="panel h-full p-0 lg:col-span-2">
-                    <div className="mb-5 flex items-start justify-between border-b border-white-light p-5  dark:border-[#1b2e4b] dark:text-white-light">
-                        <h5 className="w-full text-lg font-semibold flex items-center justify-between">
-                            {`Quantidade mensal de ${deedSubtype?.displayName} por parlamentar`}
-                            <span className="mr-6 text-sm text-gray-400">{chartData?.period}</span>
-                        </h5>
-                        <DropdownMenu
-                            options={
-                                [
-                                    {
-                                        icon: <IconTrash className="h-4.5 w-4.5 shrink-0 ltr:mr-1 rtl:ml-1" />,
-                                        text: 'Delete',
-                                        onClick: () => dispatch(deleteDashboardComponent({ id: componentId, name: componentName }))
-                                    },
-                                    {
-                                        icon: <IconCopy className="h-4.5 w-4.5 shrink-0 ltr:mr-1 rtl:ml-1" />,
-                                        text: 'Duplicate',
-                                        onClick: () => dispatch(duplicateDashboardComponent({
-                                            name: componentName,
-                                            props: { filters: deedFilters, authorsRangeInputValue: authorsQtyRange }
-                                        }))
-                                    },
-                                    {
-                                        icon: <IconXCircle className="h-4.5 w-4.5 shrink-0 ltr:mr-1 rtl:ml-1" />,
-                                        text: 'Reset',
-                                        onClick: () => handleResetChart()
-                                    },
-                                    {
-                                        icon: <IconSettings className="h-4.5 w-4.5 shrink-0 ltr:mr-1 rtl:ml-1" />,
-                                        text: 'Settings',
-                                        onClick: () => setShowModal(true)
-                                    }
-                                ]
-                            }
-                        />
-                    </div>
                     {isMounted ?
-                        <ReactApexChart
-                            options={deedsSeries.options}
-                            series={series}
-                            type="bar"
-                            height={360}
-                            width={'100%'}
-                        /> :
+                        <React.Fragment>
+                            <div className="mb-5 flex items-start justify-between border-b border-white-light p-5  dark:border-[#1b2e4b] dark:text-white-light">
+                                <h5 className="w-full text-lg font-semibold flex items-center justify-between">
+                                    {`Quantidade mensal de ${deedSubtype?.displayName} por parlamentar`}
+                                    <span className="mr-6 text-sm text-gray-400">{chartData?.period}</span>
+                                </h5>
+                                <DropdownMenu
+                                    options={
+                                        [
+                                            {
+                                                icon: <IconTrash className="h-4.5 w-4.5 shrink-0 ltr:mr-1 rtl:ml-1" />,
+                                                text: 'Delete',
+                                                onClick: () => dispatch(deleteDashboardComponent({ id: componentId, name: componentName }))
+                                            },
+                                            {
+                                                icon: <IconCopy className="h-4.5 w-4.5 shrink-0 ltr:mr-1 rtl:ml-1" />,
+                                                text: 'Duplicate',
+                                                onClick: () => dispatch(duplicateDashboardComponent({
+                                                    name: componentName,
+                                                    props: { filters: deedFilters, authorsRangeInputValue: authorsQtyRange }
+                                                }))
+                                            },
+                                            {
+                                                icon: <IconXCircle className="h-4.5 w-4.5 shrink-0 ltr:mr-1 rtl:ml-1" />,
+                                                text: 'Reset',
+                                                onClick: () => handleResetChart()
+                                            },
+                                            {
+                                                icon: <IconSettings className="h-4.5 w-4.5 shrink-0 ltr:mr-1 rtl:ml-1" />,
+                                                text: 'Settings',
+                                                onClick: () => setShowModal(true)
+                                            }
+                                        ]
+                                    }
+                                />
+                            </div>
+                            <ReactApexChart
+                                options={deedsSeries.options}
+                                series={series}
+                                type="bar"
+                                height={360}
+                                width={'100%'}
+                            />
+                        </React.Fragment>
+                        :
                         <DashboardComponentLoading />
                     }
                 </div>

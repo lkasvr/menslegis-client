@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect } from 'react';
-import Dropdown from '@/components/dropdown';
 import IconClock from '@/components/icon/icon-clock';
 import IconSquareCheck from '@/components/icon/icon-square-check';
 import { DashboardComponentProps, DashboardElementNames } from '../../dashboard-legis';
@@ -14,7 +13,7 @@ import { deleteDashboardComponent, duplicateDashboardComponent, saveDashboardCom
 interface DeedReachCardProps extends DashboardComponentProps { }
 
 const DeedReachCard = ({ componentId, filters }: DeedReachCardProps) => {
-    const componentName = DeedReachCard.name as DashboardElementNames;
+    const componentName: DashboardElementNames = 'DeedReachCard';
     const dispatch = useDispatch();
 
     const saveDashboardComponent = useCallback(() => {
