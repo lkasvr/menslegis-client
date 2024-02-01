@@ -11,6 +11,7 @@ export type AuthorWithDeedsFilters = {
     deedTypeId?: string;
     deedSubtypeId?: string;
     authorsIds?: string;
+    withDeeds?: 'true'
 };
 
 export interface AuthorWithDeeds {
@@ -28,18 +29,23 @@ export interface AuthorWithDeeds {
 }
 
 export const preload = () => {
-  void getAuthorsWithDeeds({ deedTypeId: 'PROPOSICAO' })
+  void getAuthorsWithDeeds({ deedTypeId: 'PROPOSICAO', withDeeds: 'true' })
 }
 
-export const getAuthorsWithDeeds = cache(async (filters: AuthorWithDeedsFilters): Promise<AuthorWithDeeds[]> => {
+export const getAuthorsWithDeeds = async (filters: AuthorWithDeedsFilters): Promise<AuthorWithDeeds[]> => {
     const session = await getSession();
     if (!session) throw new Error('Session not available');
 
     const { accessToken } = session.user;
     const res = await fetch(
         generatedURL(`${process.env.MENSLEGIS_API_URL}/author`, { ...filters, withDeeds: 'true' }),
-        { headers: { authorization: `Bearer ${accessToken}` } }
+        {
+            headers: {
+                'Content-Type': 'application/json',
+                authorization: `Bearer ${accessToken}`
+            }
+        }
     )
     if (!res.ok) throw new Error('Failed to fetch data')
-    return res.json()
-});
+    return await res.json();
+}

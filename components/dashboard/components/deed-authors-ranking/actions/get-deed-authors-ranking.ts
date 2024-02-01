@@ -9,15 +9,13 @@ export const getAuthorsRankingByDeed = async (filters?: AuthorWithDeedsFilters):
     period: string
 }> => {
     filters = {
-        deedTypeId: '54884db0-2303-4764-8dc8-2b227d7e7a85',
-        deedSubtypeId: '75b9b41b-8bc6-4912-8ef0-bbd14b7abc35',
         initialDate: format(subMonths(new Date(), 12), 'yyyy-MM-dd'),
         finalDate: format(new Date(), 'yyyy-MM-dd'),
         ...filters,
     };
 
     let authors: AuthorWithDeeds[];
-    try { authors = await getAuthorsWithDeeds(filters) } catch (error) {
+    try { authors = await getAuthorsWithDeeds(filters); } catch (error) {
         console.error('Error fetching deeds:', error);
         throw error;
     }
@@ -25,7 +23,9 @@ export const getAuthorsRankingByDeed = async (filters?: AuthorWithDeedsFilters):
     const initialDate = parse(`${filters.initialDate}`, 'yyyy-MM-dd', new Date());
     const finalDate = parse(`${filters.finalDate}`, 'yyyy-MM-dd', new Date());
 
-    const data = authors.sort((authorA, authorB) =>  authorB.deeds.length - authorA.deeds.length);
+    const data = authors.sort((authorA, authorB) => authorB.deeds.length - authorA.deeds.length);
+
+    console.log(data);
 
     return {
         filters,
