@@ -81,6 +81,7 @@ const DeedAuthorsRanking = ({ componentId, filters, triggerToast }: DeedAuthorsR
         setAuthorsRankedWithDeeds(authorsWithDeeds.data);
         setPeriod(authorsWithDeeds.period);
         setShowModal(false);
+        triggerToast({ type: 'success', color: 'success', title: 'Ranking updated' })
     };
 
     const handleResetRanking = async () => {

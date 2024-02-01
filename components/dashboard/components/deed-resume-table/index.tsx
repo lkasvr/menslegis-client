@@ -84,6 +84,7 @@ const DeedResumeTable = ({ componentId, filters, triggerToast }: DeedResumeTable
         const deeds = await getDeeds({ ...deedFilters, isMostRecent: 'true' });
         setDeeds(deeds);
         setShowModal(false);
+        triggerToast({ type: 'success', color: 'success', title: 'Recent propositions updated' })
     };
 
     const handleResetDeedResumeTable = async () => {

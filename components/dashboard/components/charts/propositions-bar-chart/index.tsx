@@ -112,6 +112,7 @@ const PropositionsBarChart = ({ componentId, filters, authorsRangeInputValue = 3
         setShowModal(false);
         setSeries(chartData?.series?.slice(0, authorsQtyRange))
         setIsMounted(true);
+        triggerToast({ type: 'success', color: 'success', title: 'Chart updated' })
     }
 
     const handleSelectAuthors = (options: MultiValue<{
